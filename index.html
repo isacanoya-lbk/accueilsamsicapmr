@@ -1,334 +1,983 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Assistance APMR - Gestion d'Accessibilité</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
-  
-  :root {
-    --adp-blue: #0055a4;
-    --adp-dark: #003d7a;
-    --samsic-green: #00a651;
-    --accent-orange: #ff6b00;
-    --text-dark: #1a2a4a;
-    --text-light: #6b7a9e;
-    --white: #ffffff;
-    --bg-light: #f5f8fc;
-    --error: #e00;
-    --success: #00e676;
-  }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assistance APMR - Gestion Complète</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
+        :root {
+            --adp-blue: #0055a4;
+            --adp-dark: #003d7a;
+            --samsic-green: #00a651;
+            --accent-orange: #ff6b00;
+            --text-dark: #1a2a4a;
+            --text-light: #6b7a9e;
+            --white: #ffffff;
+            --bg-light: #f5f8fc;
+            --error: #e00;
+            --success: #00e676;
+            --neon-cyan: #00d9ff;
+            --neon-purple: #d900ff;
+        }
 
-  body {
-    font-family: 'Poppins', sans-serif;
-    background: linear-gradient(135deg, var(--bg-light) 0%, #e8f0ff 100%);
-    color: var(--text-dark);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--bg-light) 0%, #e8f0ff 100%);
+            color: var(--text-dark);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
 
-  /* === MODE BAR === */
-  #mode-bar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 999;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 24px;
-    background: linear-gradient(90deg, var(--adp-blue), var(--adp-dark));
-    box-shadow: 0 4px 20px rgba(0, 85, 164, 0.15);
-    backdrop-filter: blur(10px);
-  }
+        /* ═════════════════════════════════ MODE BAR ═════════════════════════════════ */
+        #mode-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 24px;
+            background: linear-gradient(90deg, var(--adp-blue), var(--adp-dark));
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid var(--neon-cyan);
+        }
 
-  .mode-bar-left {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
+        .mode-bar-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
 
-  .mode-bar-left img {
-    height: 36px;
-    object-fit: contain;
-    filter: brightness(0) invert(1);
-  }
+        .mode-bar-left img {
+            height: 40px;
+            object-fit: contain;
+            filter: brightness(0) invert(1) drop-shadow(0 0 10px var(--neon-cyan));
+        }
 
-  .mode-btn {
-    font-family: 'Poppins', sans-serif;
-    font-size: 13px;
-    font-weight: 600;
-    padding: 8px 16px;
-    border-radius: 20px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    background: rgba(255, 255, 255, 0.1);
-    color: rgba(255, 255, 255, 0.8);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
+        .mode-btn {
+            font-family: 'Poppins', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            padding: 10px 20px;
+            border-radius: 25px;
+            border: 2px solid var(--neon-cyan);
+            background: rgba(0, 217, 255, 0.1);
+            color: var(--neon-cyan);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 0 10px rgba(0, 217, 255, 0.2);
+        }
 
-  .mode-btn:hover {
-    background: rgba(255, 255, 255, 0.2);
-    border-color: var(--white);
-  }
+        .mode-btn:hover {
+            background: rgba(0, 217, 255, 0.25);
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.5);
+            transform: translateY(-2px);
+        }
 
-  .mode-btn.active {
-    background: var(--white);
-    color: var(--adp-blue);
-    border-color: var(--white);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  }
+        .mode-btn.active {
+            background: var(--neon-cyan);
+            color: var(--adp-dark);
+            box-shadow: 0 0 30px rgba(0, 217, 255, 0.8);
+            text-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
+        }
 
-  /* === CARTES D'EMBARQUEMENT === */
-  .boarding-pass {
-    background: linear-gradient(135deg, var(--white) 0%, #f9fbff 100%);
-    border: 2px solid var(--adp-blue);
-    border-radius: 16px;
-    padding: 20px;
-    margin: 16px 0;
-    box-shadow: 0 8px 32px rgba(0, 85, 164, 0.12);
-    position: relative;
-    overflow: hidden;
-    animation: slideIn 0.4s ease;
-  }
+        .sync-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--neon-cyan);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
 
-  .boarding-pass::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, var(--adp-blue), var(--samsic-green));
-  }
+        .sync-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--success);
+            box-shadow: 0 0 10px var(--success), inset 0 0 5px rgba(255, 255, 255, 0.5);
+            animation: pulse 2s infinite;
+        }
 
-  .pass-header {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 20px;
-    margin-bottom: 20px;
-    align-items: center;
-  }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
 
-  .pass-info h3 {
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--text-dark);
-    margin-bottom: 4px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
+        /* ═════════════════════════════════ VIEWS ═════════════════════════════════ */
+        .view {
+            display: none;
+            padding-top: 70px;
+            min-height: 100vh;
+            position: relative;
+            z-index: 1;
+            animation: fadeIn 0.5s ease;
+        }
 
-  .pass-destination {
-    font-size: 24px;
-    font-weight: 800;
-    color: var(--adp-blue);
-    font-family: 'JetBrains Mono', monospace;
-    letter-spacing: 2px;
-  }
+        .view.active {
+            display: block;
+        }
 
-  .pass-barcode {
-    text-align: center;
-  }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
 
-  .barcode-svg {
-    width: 100px;
-    height: 60px;
-    border: 2px solid var(--text-dark);
-    border-radius: 4px;
-    padding: 4px;
-    background: var(--white);
-  }
+        /* ═════════════════════════════════ AGENT VIEW ═════════════════════════════════ */
+        #agent-view {
+            padding: 70px 20px 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
 
-  .pass-details {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-    padding-top: 16px;
-    border-top: 2px dashed var(--adp-blue);
-  }
+        .agent-title {
+            text-align: center;
+            margin-bottom: 30px;
+        }
 
-  .detail-item {
-    text-align: center;
-  }
+        .agent-title h1 {
+            font-size: clamp(24px, 4vw, 42px);
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            background: linear-gradient(90deg, var(--adp-blue), var(--neon-cyan), var(--samsic-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 20px rgba(0, 217, 255, 0.4));
+            margin-bottom: 8px;
+        }
 
-  .detail-label {
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    color: var(--text-light);
-    letter-spacing: 1px;
-    margin-bottom: 6px;
-  }
+        .agent-title p {
+            color: var(--text-light);
+            font-size: 14px;
+            letter-spacing: 1px;
+        }
 
-  .detail-value {
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--text-dark);
-    font-family: 'JetBrains Mono', monospace;
-  }
+        /* ═════════════════════════════════ SCANNER ZONE ═════════════════════════════════ */
+        .scanner-zone {
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid var(--neon-cyan);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 0 30px rgba(0, 217, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
 
-  /* === ANIMATIONS === */
-  @keyframes slideIn {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
+        .scanner-title {
+            font-size: 14px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--neon-cyan);
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
+        }
 
-  /* === RESPONSIVE === */
-  @media (max-width: 768px) {
-    #mode-bar {
-      flex-direction: column;
-      gap: 12px;
-      padding: 12px;
-    }
+        .btn-scan-cam {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            font-family: 'Poppins', sans-serif;
+            font-size: 15px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 16px 20px;
+            border: 2px solid var(--neon-cyan);
+            border-radius: 14px;
+            background: rgba(0, 217, 255, 0.1);
+            color: var(--neon-cyan);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(0, 217, 255, 0.3);
+            margin-bottom: 16px;
+        }
 
-    .pass-details {
-      grid-template-columns: 1fr;
-    }
+        .btn-scan-cam:hover {
+            background: rgba(0, 217, 255, 0.25);
+            box-shadow: 0 0 25px rgba(0, 217, 255, 0.6);
+            transform: translateY(-3px);
+        }
 
-    .pass-header {
-      grid-template-columns: 1fr;
-    }
-  }
-</style>
+        .btn-scan-cam:active {
+            transform: scale(0.98);
+        }
+
+        .scan-input {
+            width: 100%;
+            padding: 12px 16px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            border: 2px solid var(--neon-cyan);
+            border-radius: 10px;
+            background: rgba(0, 217, 255, 0.05);
+            color: var(--text-dark);
+            transition: all 0.3s ease;
+        }
+
+        .scan-input:focus {
+            outline: none;
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.4);
+            background: rgba(0, 217, 255, 0.1);
+        }
+
+        #scan-result-box {
+            display: none;
+            background: rgba(0, 230, 118, 0.1);
+            border: 2px solid var(--success);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 16px;
+            box-shadow: 0 0 15px rgba(0, 230, 118, 0.2);
+        }
+
+        #scan-result-box.show {
+            display: block;
+            animation: slideIn 0.4s ease;
+        }
+
+        #scan-raw {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            color: var(--text-dark);
+            margin-top: 8px;
+        }
+
+        /* ═════════════════════════════════ PASSENGER LIST ════════════════��════════════════ */
+        .list-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .list-header h2 {
+            font-size: 16px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 10px rgba(0, 217, 255, 0.4);
+        }
+
+        .count-badge {
+            background: linear-gradient(135deg, var(--adp-blue), var(--neon-cyan));
+            color: white;
+            font-size: 13px;
+            font-weight: 800;
+            padding: 6px 14px;
+            border-radius: 20px;
+            box-shadow: 0 0 15px rgba(0, 217, 255, 0.4);
+        }
+
+        .passenger-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+
+        .pax-card {
+            background: white;
+            border: 2px solid var(--adp-blue);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 85, 164, 0.15);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            animation: slideIn 0.4s ease;
+        }
+
+        .pax-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--adp-blue), var(--samsic-green));
+        }
+
+        .pax-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 85, 164, 0.25);
+            border-color: var(--neon-cyan);
+        }
+
+        .pax-card.status-coming {
+            border-color: var(--samsic-green);
+            background: rgba(0, 166, 81, 0.05);
+        }
+
+        .pax-status {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+
+        .pax-status.waiting {
+            background: rgba(245, 166, 35, 0.2);
+            color: #ff6b00;
+            border: 1px solid #ff6b00;
+        }
+
+        .pax-status.coming {
+            background: rgba(0, 230, 118, 0.2);
+            color: var(--success);
+            border: 1px solid var(--success);
+            animation: pulse 1.5s infinite;
+        }
+
+        .pax-info {
+            margin-bottom: 16px;
+        }
+
+        .pax-name {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+            letter-spacing: 0.5px;
+        }
+
+        .pax-details {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-bottom: 8px;
+        }
+
+        .pax-details strong {
+            color: var(--adp-blue);
+            font-weight: 700;
+        }
+
+        .wheelchair-icon {
+            font-size: 24px;
+            margin: 8px 0;
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .wheelchair-animated {
+            display: inline-block;
+            animation: wheelchairMove 0.8s ease-in-out;
+        }
+
+        @keyframes wheelchairMove {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(3px); }
+            50% { transform: translateX(6px); }
+            75% { transform: translateX(3px); }
+        }
+
+        .pax-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px dashed var(--neon-cyan);
+        }
+
+        .btn {
+            flex: 1;
+            min-width: 100px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            padding: 10px 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-coming {
+            background: rgba(0, 166, 81, 0.15);
+            color: var(--samsic-green);
+            border: 1px solid var(--samsic-green);
+        }
+
+        .btn-coming:hover {
+            background: var(--samsic-green);
+            color: white;
+        }
+
+        .btn-valid {
+            background: rgba(0, 230, 118, 0.15);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+
+        .btn-valid:hover {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-edit {
+            background: rgba(0, 217, 255, 0.15);
+            color: var(--neon-cyan);
+            border: 1px solid var(--neon-cyan);
+        }
+
+        .btn-edit:hover {
+            background: var(--neon-cyan);
+            color: var(--adp-dark);
+        }
+
+        /* ═════════════════════════════════ DISPLAY VIEW ═════════════════════════════════ */
+        #display-view {
+            background: linear-gradient(135deg, #060e1c 0%, #0a1428 100%);
+            padding: 70px 0 0 0 !important;
+        }
+
+        .fids-header {
+            background: linear-gradient(90deg, var(--adp-blue), var(--adp-dark));
+            border-bottom: 3px solid var(--neon-cyan);
+            padding: 20px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 0 30px rgba(0, 217, 255, 0.3);
+        }
+
+        .fids-title {
+            font-size: clamp(18px, 3vw, 36px);
+            font-weight: 900;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 20px rgba(0, 217, 255, 0.6);
+        }
+
+        .fids-clock {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: clamp(20px, 2.5vw, 32px);
+            color: #FFE033;
+            letter-spacing: 2px;
+            font-weight: 700;
+            text-shadow: 0 0 20px rgba(255, 224, 51, 0.8);
+        }
+
+        .fids-table-wrap {
+            padding: 20px 30px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .fids-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .fids-thead th {
+            padding: 16px 20px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--neon-cyan);
+            border-bottom: 2px solid var(--neon-cyan);
+            background: rgba(0, 217, 255, 0.05);
+            text-shadow: 0 0 10px rgba(0, 217, 255, 0.4);
+        }
+
+        .fids-tr {
+            border-bottom: 1px solid rgba(0, 217, 255, 0.2);
+            animation: slideIn 0.4s ease;
+            transition: all 0.3s ease;
+        }
+
+        .fids-tr:nth-child(odd) {
+            background: rgba(0, 85, 164, 0.1);
+        }
+
+        .fids-tr:nth-child(even) {
+            background: rgba(0, 85, 164, 0.05);
+        }
+
+        .fids-tr:hover {
+            background: rgba(0, 217, 255, 0.15);
+            box-shadow: inset 0 0 20px rgba(0, 217, 255, 0.1);
+        }
+
+        .fids-tr.status-coming {
+            border-left: 4px solid var(--samsic-green);
+            background: rgba(0, 166, 81, 0.1) !important;
+        }
+
+        .fids-td {
+            padding: 16px 20px;
+            color: #fff;
+            font-size: 13px;
+        }
+
+        .fids-name {
+            font-weight: 700;
+            color: var(--neon-cyan);
+            font-size: 14px;
+            text-shadow: 0 0 10px rgba(0, 217, 255, 0.3);
+        }
+
+        .fids-flight {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            color: #FFE033;
+            font-size: 13px;
+            text-shadow: 0 0 8px rgba(255, 224, 51, 0.5);
+        }
+
+        .fids-gate {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 16px;
+            font-weight: 900;
+            color: #FFE033;
+            text-shadow: 0 0 15px rgba(255, 224, 51, 0.6);
+        }
+
+        .fids-badge {
+            display: inline-block;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: 2px solid;
+            animation: blink 1.4s ease-in-out infinite;
+        }
+
+        .fids-badge.waiting {
+            color: #FFE033;
+            border-color: #FFE033;
+            background: rgba(255, 224, 51, 0.15);
+        }
+
+        .fids-badge.coming {
+            color: var(--samsic-green);
+            border-color: var(--samsic-green);
+            background: rgba(0, 166, 81, 0.15);
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--neon-cyan);
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        /* ═════════════════════════════════ STATS VIEW ═════════════════════════════════ */
+        #stats-view {
+            padding: 70px 20px 30px !important;
+            background: linear-gradient(135deg, var(--bg-light) 0%, #e8f0ff 100%);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 16px;
+            text-align: center;
+            border: 2px solid var(--adp-blue);
+            box-shadow: 0 0 20px rgba(0, 85, 164, 0.2);
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 900;
+            color: var(--adp-blue);
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+            margin-top: 8px;
+        }
+
+        /* ═════════════════════════════════ ANIMATIONS ═════════════════════════════════ */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ═════════════════════════════════ RESPONSIVE ═════════════════════════════════ */
+        @media (max-width: 768px) {
+            #mode-bar {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .passenger-list {
+                grid-template-columns: 1fr;
+            }
+
+            .pax-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                flex: none;
+                width: 100%;
+            }
+
+            .fids-header {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+
+            .fids-table-wrap {
+                padding: 15px;
+            }
+
+            .fids-td {
+                padding: 12px 10px;
+                font-size: 12px;
+            }
+        }
+    </style>
 </head>
 <body>
 
-<!-- MODE BAR AMÉLIORÉ -->
-<div id="mode-bar">
-  <div class="mode-bar-left">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Groupe_ADP_logo.svg/200px-Groupe_ADP_logo.svg.png" alt="Groupe ADP">
-    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect fill='%2300a651' width='100' height='100'/%3E%3Ctext x='50' y='55' font-size='30' font-weight='bold' text-anchor='middle' fill='white'%3EAPMR%3C/text%3E%3C/svg%3E" alt="Samsic APMR" style="height:36px;">
-  </div>
-  <div style="display: flex; gap: 8px;">
-    <button class="mode-btn active">🎛️ Agent</button>
-    <button class="mode-btn">📺 Salle d'accueil</button>
-    <button class="mode-btn">📊 Statistiques</button>
-  </div>
-  <div style="color: white; font-size: 12px; font-weight: 600;">
-    <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--success); margin-right: 8px; box-shadow: 0 0 8px var(--success);"></span>
-    Connecté
-  </div>
-</div>
-
-<!-- EXEMPLE CARTE D'EMBARQUEMENT -->
-<div style="max-width: 900px; margin: 100px auto; padding: 0 20px;">
-  <h1 style="text-align: center; margin-bottom: 40px; font-size: 28px; color: var(--text-dark);">
-    Gestion des Passagers en Situation de Handicap
-  </h1>
-
-  <div class="boarding-pass">
-    <div class="pass-header">
-      <div class="pass-info">
-        <h3>Jean Dupont</h3>
-        <div class="pass-destination">AF290 → CDG</div>
-      </div>
-      <div class="pass-barcode">
-        <svg class="barcode-svg" viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg">
-          <rect x="10" y="5" width="2" height="50" fill="black"/>
-          <rect x="14" y="5" width="3" height="50" fill="black"/>
-          <rect x="19" y="5" width="1" height="50" fill="black"/>
-          <rect x="22" y="5" width="2" height="50" fill="black"/>
-          <rect x="26" y="5" width="3" height="50" fill="black"/>
-          <rect x="31" y="5" width="2" height="50" fill="black"/>
-          <rect x="35" y="5" width="1" height="50" fill="black"/>
-          <rect x="38" y="5" width="3" height="50" fill="black"/>
-          <rect x="43" y="5" width="2" height="50" fill="black"/>
-          <rect x="47" y="5" width="2" height="50" fill="black"/>
-          <rect x="51" y="5" width="3" height="50" fill="black"/>
-          <rect x="56" y="5" width="1" height="50" fill="black"/>
-          <rect x="59" y="5" width="2" height="50" fill="black"/>
-          <rect x="63" y="5" width="3" height="50" fill="black"/>
-          <rect x="68" y="5" width="2" height="50" fill="black"/>
-          <rect x="72" y="5" width="1" height="50" fill="black"/>
-          <rect x="75" y="5" width="3" height="50" fill="black"/>
-          <rect x="80" y="5" width="2" height="50" fill="black"/>
-          <rect x="84" y="5" width="2" height="50" fill="black"/>
-          <text x="50" y="58" font-size="6" text-anchor="middle" fill="black">AF290</text>
-        </svg>
-      </div>
+    <!-- MODE BAR -->
+    <div id="mode-bar">
+        <div class="mode-bar-left">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Groupe_ADP_logo.svg/200px-Groupe_ADP_logo.svg.png" alt="Groupe ADP">
+            <span style="color: var(--neon-cyan); font-weight: 800; font-size: 14px; letter-spacing: 2px;">SAMSIC APMR</span>
+        </div>
+        <div style="display: flex; gap: 8px;">
+            <button class="mode-btn active" onclick="switchView('agent')">🎛️ AGENT</button>
+            <button class="mode-btn" onclick="switchView('display')">📺 SALLE</button>
+            <button class="mode-btn" onclick="switchView('stats')">📊 STATS</button>
+        </div>
+        <div class="sync-indicator">
+            <div class="sync-dot"></div>
+            <span>CONNECTÉ</span>
+        </div>
     </div>
 
-    <div class="pass-details">
-      <div class="detail-item">
-        <div class="detail-label">🚪 Porte</div>
-        <div class="detail-value">42</div>
-      </div>
-      <div class="detail-item">
-        <div class="detail-label">⏰ Décollage</div>
-        <div class="detail-value">14:30</div>
-      </div>
-      <div class="detail-item">
-        <div class="detail-label">🛫 Destination</div>
-        <div class="detail-value">Paris</div>
-      </div>
-    </div>
-  </div>
+    <!-- AGENT VIEW -->
+    <div id="agent-view" class="view active">
+        <div class="agent-title">
+            <h1>🎛️ Assistance APMR</h1>
+            <p>Gestion des passagers en situation de handicap</p>
+        </div>
 
-  <div class="boarding-pass" style="border-color: var(--samsic-green);">
-    <div class="pass-header">
-      <div class="pass-info">
-        <h3>Marie Bernard</h3>
-        <div style="color: var(--samsic-green);" class="pass-destination">BA425 → LYS</div>
-      </div>
-      <div class="pass-barcode">
-        <svg class="barcode-svg" viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg">
-          <rect x="8" y="5" width="3" height="50" fill="black"/>
-          <rect x="13" y="5" width="1" height="50" fill="black"/>
-          <rect x="16" y="5" width="2" height="50" fill="black"/>
-          <rect x="20" y="5" width="3" height="50" fill="black"/>
-          <rect x="25" y="5" width="2" height="50" fill="black"/>
-          <rect x="29" y="5" width="1" height="50" fill="black"/>
-          <rect x="32" y="5" width="3" height="50" fill="black"/>
-          <rect x="37" y="5" width="2" height="50" fill="black"/>
-          <rect x="41" y="5" width="2" height="50" fill="black"/>
-          <rect x="45" y="5" width="3" height="50" fill="black"/>
-          <rect x="50" y="5" width="1" height="50" fill="black"/>
-          <rect x="53" y="5" width="2" height="50" fill="black"/>
-          <rect x="57" y="5" width="3" height="50" fill="black"/>
-          <rect x="62" y="5" width="2" height="50" fill="black"/>
-          <rect x="66" y="5" width="1" height="50" fill="black"/>
-          <rect x="69" y="5" width="3" height="50" fill="black"/>
-          <rect x="74" y="5" width="2" height="50" fill="black"/>
-          <rect x="78" y="5" width="2" height="50" fill="black"/>
-          <rect x="82" y="5" width="3" height="50" fill="black"/>
-          <text x="50" y="58" font-size="6" text-anchor="middle" fill="black">BA425</text>
-        </svg>
-      </div>
+        <!-- SCANNER ZONE -->
+        <div class="scanner-zone">
+            <div class="scanner-title">📱 Scanner Code-Barres</div>
+            <button class="btn-scan-cam" onclick="openScanner()">📷 LANCER LE SCANNER</button>
+            <div style="margin: 16px 0; text-align: center; color: var(--text-light); font-weight: 600;">OU</div>
+            <input type="text" id="manual-scan" class="scan-input" placeholder="Saisissez le code-barres manuellement..." onkeypress="if(event.key==='Enter') manualScan()">
+            <button class="btn-scan-cam" style="margin-top: 8px;" onclick="manualScan()">✓ VALIDER</button>
+            <div id="scan-result-box">
+                <strong>✅ Passager détecté :</strong>
+                <div id="scan-raw"></div>
+            </div>
+        </div>
+
+        <!-- PASSENGER LIST -->
+        <div>
+            <div class="list-header">
+                <h2>👥 PASSAGERS EN ATTENTE</h2>
+                <span class="count-badge" id="pax-count">0</span>
+            </div>
+            <div class="passenger-list" id="passenger-list-agent"></div>
+        </div>
     </div>
 
-    <div class="pass-details">
-      <div class="detail-item">
-        <div class="detail-label">🚪 Porte</div>
-        <div class="detail-value">28</div>
-      </div>
-      <div class="detail-item">
-        <div class="detail-label">⏰ Décollage</div>
-        <div class="detail-value">16:45</div>
-      </div>
-      <div class="detail-item">
-        <div class="detail-label">🛫 Destination</div>
-        <div class="detail-value">Lyon</div>
-      </div>
+    <!-- DISPLAY VIEW (SALLE D'ACCUEIL) -->
+    <div id="display-view" class="view">
+        <div class="fids-header">
+            <div class="fids-title">✈️ LISTE D'ASSISTANCE APMR</div>
+            <div class="fids-clock" id="display-clock">00:00</div>
+        </div>
+        <div class="fids-table-wrap">
+            <table class="fids-table">
+                <thead class="fids-thead">
+                    <tr>
+                        <th>👤 Passager</th>
+                        <th>✈️ Vol</th>
+                        <th>🚪 Porte</th>
+                        <th>📊 Statut</th>
+                    </tr>
+                </thead>
+                <tbody id="passenger-list-display"></tbody>
+            </table>
+        </div>
     </div>
-  </div>
-</div>
+
+    <!-- STATS VIEW -->
+    <div id="stats-view" class="view">
+        <h1 style="text-align: center; font-size: 32px; color: var(--adp-blue); margin-bottom: 30px; text-transform: uppercase; letter-spacing: 2px;">📊 Statistiques</h1>
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-value" id="stat-total">0</div>
+                <div class="stat-label">Total</div>
+            </div>
+            <div class="stat-card" style="border-color: #ff6b00;">
+                <div class="stat-value" style="color: #ff6b00;" id="stat-waiting">0</div>
+                <div class="stat-label">En Attente</div>
+            </div>
+            <div class="stat-card" style="border-color: var(--samsic-green);">
+                <div class="stat-value" style="color: var(--samsic-green);" id="stat-coming">0</div>
+                <div class="stat-label">Agent Arrive</div>
+            </div>
+            <div class="stat-card" style="border-color: var(--success);">
+                <div class="stat-value" style="color: var(--success);" id="stat-completed">0</div>
+                <div class="stat-label">Complétés</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ═════════════════════════════════ DATA ═════════════════════════════════
+        let passengers = [
+            { id: 1, name: 'Sophie Martin', flight: 'AF127', gate: '12', status: 'waiting', time: '14:30', destination: 'Paris CDG' },
+            { id: 2, name: 'Jean Dupont', flight: 'BA204', gate: '8', status: 'waiting', time: '15:00', destination: 'Londres LHR' },
+            { id: 3, name: 'Marie Laurent', flight: 'LH501', gate: '15', status: 'waiting', time: '14:45', destination: 'Berlin TXL' },
+            { id: 4, name: 'Pierre Renault', flight: 'KL620', gate: '22', status: 'waiting', time: '15:15', destination: 'Amsterdam AMS' },
+            { id: 5, name: 'Isabelle Blanc', flight: 'AF128', gate: '13', status: 'waiting', time: '14:50', destination: 'Lyon LYS' }
+        ];
+
+        // ═════════════════════════════════ VIEW SWITCHING ═════════════════════════════════
+        function switchView(viewName) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(viewName + '-view').classList.add('active');
+            event.target.classList.add('active');
+            updateAll();
+        }
+
+        // ═════════════════════════════════ SCANNER ═════════════════════════════════
+        function openScanner() {
+            alert('📷 Scanner ouvert - Simulez par saisie manuelle pour tester\n\nExemples : AF127, Sophie, BA204');
+        }
+
+        function manualScan() {
+            const input = document.getElementById('manual-scan').value.trim();
+            if (!input) return;
+
+            const passenger = passengers.find(p => 
+                p.flight.includes(input.toUpperCase()) || 
+                p.name.toUpperCase().includes(input.toUpperCase())
+            );
+
+            if (passenger) {
+                const resultBox = document.getElementById('scan-result-box');
+                const resultRaw = document.getElementById('scan-raw');
+                resultBox.classList.add('show');
+                resultRaw.textContent = `${passenger.name} | Vol: ${passenger.flight} | Porte: ${passenger.gate}`;
+                document.getElementById('manual-scan').value = '';
+            } else {
+                alert('❌ Passager non trouvé');
+            }
+        }
+
+        // ═════════════════════════════════ PASSENGER ACTIONS ═════════════════════════════════
+        function markComing(id) {
+            const passenger = passengers.find(p => p.id === id);
+            if (passenger) {
+                passenger.status = 'coming';
+                updateAll();
+                showNotification('Agent arrivé auprès du passager ✅');
+            }
+        }
+
+        function validatePassenger(id) {
+            const passenger = passengers.find(p => p.id === id);
+            if (passenger) {
+                passenger.status = 'completed';
+                updateAll();
+                showNotification(`${passenger.name} a quitté le système ✅`);
+            }
+        }
+
+        function editPassenger(id) {
+            const passenger = passengers.find(p => p.id === id);
+            if (passenger) {
+                const newName = prompt('Nouveau nom :', passenger.name);
+                if (newName) {
+                    passenger.name = newName;
+                    updateAll();
+                    showNotification('Passager modifié ✅');
+                }
+            }
+        }
+
+        // ═════════════════════════════════ RENDERING ═════════════════════════════════
+        function renderPassengers() {
+            const activePassengers = passengers.filter(p => p.status !== 'completed');
+
+            // Agent view
+            const agentList = document.getElementById('passenger-list-agent');
+            if (activePassengers.length === 0) {
+                agentList.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1 / -1;">
+                        <div class="empty-icon">✅</div>
+                        <p style="color: var(--text-light);">Aucune demande d'assistance</p>
+                    </div>
+                `;
+            } else {
+                agentList.innerHTML = activePassengers.map(pax => `
+                    <div class="pax-card status-${pax.status}">
+                        <span class="pax-status ${pax.status}">${pax.status === 'waiting' ? '⏳ En attente' : '✅ Agent arrive'}</span>
+                        <div class="pax-info">
+                            <div class="pax-name">${pax.name}</div>
+                            <div class="pax-details"><strong>Vol:</strong> ${pax.flight}</div>
+                            <div class="pax-details"><strong>Porte:</strong> ${pax.gate}</div>
+                            <div class="pax-details"><strong>Destination:</strong> ${pax.destination}</div>
+                            <div class="pax-details"><strong>Heure:</strong> ${pax.time}</div>
+                            <div class="wheelchair-icon">
+                                ${pax.status === 'waiting' ? '⏳' : '<span class="wheelchair-animated">♿️🚶🏻</span>'}
+                            </div>
+                        </div>
+                        <div class="pax-actions">
+                            ${pax.status === 'waiting' ? `<button class="btn btn-coming" onclick="markComing(${pax.id})">AGENT ARRIVE</button>` : ''}
+                            <button class="btn btn-valid" onclick="validatePassenger(${pax.id})">VALIDER</button>
+                            <button class="btn btn-edit" onclick="editPassenger(${pax.id})">✏️ MODIFIER</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            document.getElementById('pax-count').textContent = activePassengers.length;
+
+            // Display view
+            const displayList = document.getElementById('passenger-list-display');
+            if (activePassengers.length === 0) {
+                displayList.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="empty-state" style="padding: 40px;">
+                            <div class="empty-icon">✅</div>
+                            <p>Tous les passagers ont été servis</p>
+                        </td>
+                    </tr>
+                `;
+            } else {
+                displayList.innerHTML = activePassengers.map(pax => `
+                    <tr class="fids-tr status-${pax.status}">
+                        <td class="fids-td fids-name">${pax.name}</td>
+                        <td class="fids-td fids-flight">${pax.flight}</td>
+                        <td class="fids-td"><span class="fids-gate">${pax.gate}</span></td>
+                        <td class="fids-td"><span class="fids-badge ${pax.status}">${pax.status === 'waiting' ? '⏳ ATTENTE' : '♿️ AGENT'}</span></td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        function updateStats() {
+            const stats = {
+                total: passengers.length,
+                waiting: passengers.filter(p => p.status === 'waiting').length,
+                coming: passengers.filter(p => p.status === 'coming').length,
+                completed: passengers.filter(p => p.status === 'completed').length
+            };
+
+            document.getElementById('stat-total').textContent = stats.total;
+            document.getElementById('stat-waiting').textContent = stats.waiting;
+            document.getElementById('stat-coming').textContent = stats.coming;
+            document.getElementById('stat-completed').textContent = stats.completed;
+        }
+
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('display-clock').textContent = 
+                `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+        }
+
+        function updateAll() {
+            renderPassengers();
+            updateStats();
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: var(--success);
+                color: white;
+                padding: 16px 24px;
+                border-radius: 10px;
+                font-weight: 700;
+                z-index: 10000;
+                animation: slideIn 0.3s ease;
+                box-shadow: 0 0 20px rgba(0, 230, 118, 0.4);
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+        }
+
+        // Initialization
+        setInterval(updateClock, 1000);
+        updateAll();
+        updateClock();
+    </script>
 
 </body>
 </html>
