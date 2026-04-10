@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Assistance APMR - Gestion Complète</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
     <style>
         * {
             margin: 0;
@@ -166,6 +167,48 @@
             letter-spacing: 1px;
         }
 
+        /* ═════════════════════════════════ TABS SCANNER/MANUAL ═════════════════════════════════ */
+        .input-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--neon-cyan);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px 16px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: transparent;
+            color: var(--text-light);
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn:hover {
+            color: var(--neon-cyan);
+        }
+
+        .tab-btn.active {
+            color: var(--neon-cyan);
+            border-bottom-color: var(--neon-cyan);
+            text-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
         /* ═════════════════════════════════ SCANNER ZONE ═════════════════════════════════ */
         .scanner-zone {
             background: rgba(255, 255, 255, 0.95);
@@ -187,40 +230,126 @@
             text-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
         }
 
-        .btn-scan-cam {
-            display: flex;
+        /* SCANNER MODE */
+        #cam-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 10000;
+            background: rgba(0, 0, 0, 0.95);
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 20px;
+        }
+
+        #cam-modal.active {
+            display: flex;
+        }
+
+        #cam-video {
             width: 100%;
+            max-width: 500px;
+            border-radius: 16px;
+            border: 3px solid var(--neon-cyan);
+            box-shadow: 0 0 30px rgba(0, 217, 255, 0.6);
+        }
+
+        #cam-canvas {
+            display: none;
+        }
+
+        .cam-controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn-close-cam {
             font-family: 'Poppins', sans-serif;
-            font-size: 15px;
-            font-weight: 800;
+            font-size: 13px;
+            font-weight: 700;
+            padding: 12px 24px;
+            border: 2px solid var(--error);
+            border-radius: 10px;
+            background: rgba(255, 23, 68, 0.1);
+            color: var(--error);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-close-cam:hover {
+            background: var(--error);
+            color: white;
+        }
+
+        .btn-scan {
+            font-family: 'Poppins', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            padding: 12px 24px;
+            border: 2px solid var(--samsic-green);
+            border-radius: 10px;
+            background: rgba(0, 166, 81, 0.1);
+            color: var(--samsic-green);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-scan:hover {
+            background: var(--samsic-green);
+            color: white;
+        }
+
+        .btn-start-cam {
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
             letter-spacing: 1px;
             text-transform: uppercase;
-            padding: 16px 20px;
+            padding: 14px 28px;
             border: 2px solid var(--neon-cyan);
-            border-radius: 14px;
+            border-radius: 10px;
             background: rgba(0, 217, 255, 0.1);
             color: var(--neon-cyan);
             cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: 0 0 15px rgba(0, 217, 255, 0.3);
-            margin-bottom: 16px;
+            width: 100%;
         }
 
-        .btn-scan-cam:hover {
+        .btn-start-cam:hover {
             background: rgba(0, 217, 255, 0.25);
             box-shadow: 0 0 25px rgba(0, 217, 255, 0.6);
             transform: translateY(-3px);
         }
 
-        .btn-scan-cam:active {
-            transform: scale(0.98);
+        /* MANUAL MODE */
+        .scan-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr auto;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--text-light);
         }
 
         .scan-input {
-            width: 100%;
             padding: 12px 16px;
             font-family: 'Poppins', sans-serif;
             font-size: 14px;
@@ -236,6 +365,30 @@
             border-color: var(--neon-cyan);
             box-shadow: 0 0 20px rgba(0, 217, 255, 0.4);
             background: rgba(0, 217, 255, 0.1);
+        }
+
+        .btn-add-passenger {
+            align-self: flex-end;
+            font-family: 'Poppins', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 12px 24px;
+            border: 2px solid var(--samsic-green);
+            border-radius: 10px;
+            background: rgba(0, 166, 81, 0.1);
+            color: var(--samsic-green);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(0, 166, 81, 0.3);
+        }
+
+        .btn-add-passenger:hover {
+            background: var(--samsic-green);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 0 25px rgba(0, 166, 81, 0.6);
         }
 
         #scan-result-box {
@@ -260,7 +413,7 @@
             margin-top: 8px;
         }
 
-        /* ═════════════════════════════════ PASSENGER LIST ════════════════��════════════════ */
+        /* ══════════════════��══════════════ PASSENGER LIST ═════════════════════════════════ */
         .list-header {
             display: flex;
             align-items: center;
@@ -669,6 +822,15 @@
                 gap: 10px;
             }
 
+            .scan-form {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-add-passenger {
+                align-self: auto;
+                width: 100%;
+            }
+
             .passenger-list {
                 grid-template-columns: 1fr;
             }
@@ -727,14 +889,40 @@
 
         <!-- SCANNER ZONE -->
         <div class="scanner-zone">
-            <div class="scanner-title">📱 Scanner Code-Barres</div>
-            <button class="btn-scan-cam" onclick="openScanner()">📷 LANCER LE SCANNER</button>
-            <div style="margin: 16px 0; text-align: center; color: var(--text-light); font-weight: 600;">OU</div>
-            <input type="text" id="manual-scan" class="scan-input" placeholder="Saisissez le code-barres manuellement..." onkeypress="if(event.key==='Enter') manualScan()">
-            <button class="btn-scan-cam" style="margin-top: 8px;" onclick="manualScan()">✓ VALIDER</button>
-            <div id="scan-result-box">
-                <strong>✅ Passager détecté :</strong>
-                <div id="scan-raw"></div>
+            <div class="scanner-title">📱 Ajouter un Passager</div>
+            
+            <!-- TABS -->
+            <div class="input-tabs">
+                <button class="tab-btn active" onclick="switchTab('scanner')">📷 SCANNER QR</button>
+                <button class="tab-btn" onclick="switchTab('manual')">✍️ SAISIE MANUELLE</button>
+            </div>
+
+            <!-- SCANNER TAB -->
+            <div id="scanner-tab" class="tab-content active">
+                <button class="btn-start-cam" onclick="openCamera()">📷 LANCER LE SCANNER QR</button>
+                <div id="scan-result-box">
+                    <strong>✅ Passager scanné :</strong>
+                    <div id="scan-raw"></div>
+                </div>
+            </div>
+
+            <!-- MANUAL TAB -->
+            <div id="manual-tab" class="tab-content">
+                <div class="scan-form">
+                    <div class="form-group">
+                        <label>👤 Nom du Passager</label>
+                        <input type="text" id="input-name" class="scan-input" placeholder="Ex: Jean Dupont">
+                    </div>
+                    <div class="form-group">
+                        <label>✈️ Numéro de Vol</label>
+                        <input type="text" id="input-flight" class="scan-input" placeholder="Ex: AF127">
+                    </div>
+                    <div class="form-group">
+                        <label>🚪 Porte d'Embarquement</label>
+                        <input type="text" id="input-gate" class="scan-input" placeholder="Ex: 12">
+                    </div>
+                    <button class="btn-add-passenger" onclick="addNewPassenger()">✓ AJOUTER</button>
+                </div>
             </div>
         </div>
 
@@ -745,6 +933,16 @@
                 <span class="count-badge" id="pax-count">0</span>
             </div>
             <div class="passenger-list" id="passenger-list-agent"></div>
+        </div>
+    </div>
+
+    <!-- CAMERA MODAL -->
+    <div id="cam-modal">
+        <video id="cam-video" autoplay playsinline></video>
+        <canvas id="cam-canvas"></canvas>
+        <div class="cam-controls">
+            <button class="btn-scan" onclick="scanQRCode()">📍 SCANNER</button>
+            <button class="btn-close-cam" onclick="closeCamera()">✗ FERMER</button>
         </div>
     </div>
 
@@ -795,14 +993,14 @@
     <script>
         // ═════════════════════════════════ DATA ═════════════════════════════════
         let passengers = [
-            { id: 1, name: 'Sophie Martin', flight: 'AF127', gate: '12', status: 'waiting', time: '14:30', destination: 'Paris CDG' },
-            { id: 2, name: 'Jean Dupont', flight: 'BA204', gate: '8', status: 'waiting', time: '15:00', destination: 'Londres LHR' },
-            { id: 3, name: 'Marie Laurent', flight: 'LH501', gate: '15', status: 'waiting', time: '14:45', destination: 'Berlin TXL' },
-            { id: 4, name: 'Pierre Renault', flight: 'KL620', gate: '22', status: 'waiting', time: '15:15', destination: 'Amsterdam AMS' },
-            { id: 5, name: 'Isabelle Blanc', flight: 'AF128', gate: '13', status: 'waiting', time: '14:50', destination: 'Lyon LYS' }
+            { id: 1, name: 'Sophie Martin', flight: 'AF127', gate: '12', status: 'waiting', destination: 'Paris CDG' },
+            { id: 2, name: 'Jean Dupont', flight: 'BA204', gate: '8', status: 'waiting', destination: 'Londres LHR' },
         ];
 
-        // ═════════════════════════════════ VIEW SWITCHING ═════════════════════════════════
+        let nextId = 3;
+        let cameraStream = null;
+
+        // ═════════════════════════════════ VIEW SWITCHING ═════���═══════════════════════════
         function switchView(viewName) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
@@ -811,29 +1009,115 @@
             updateAll();
         }
 
-        // ═════════════════════════════════ SCANNER ═════════════════════════════════
-        function openScanner() {
-            alert('📷 Scanner ouvert - Simulez par saisie manuelle pour tester\n\nExemples : AF127, Sophie, BA204');
+        // ═════════════════════════════════ TAB SWITCHING ═════════════════════════════════
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabName + '-tab').classList.add('active');
+            event.target.classList.add('active');
         }
 
-        function manualScan() {
-            const input = document.getElementById('manual-scan').value.trim();
-            if (!input) return;
+        // ═════════════════════════════════ CAMERA & QR SCANNING ═════════════════════════════════
+        async function openCamera() {
+            const modal = document.getElementById('cam-modal');
+            const video = document.getElementById('cam-video');
+            modal.classList.add('active');
 
-            const passenger = passengers.find(p => 
-                p.flight.includes(input.toUpperCase()) || 
-                p.name.toUpperCase().includes(input.toUpperCase())
-            );
-
-            if (passenger) {
-                const resultBox = document.getElementById('scan-result-box');
-                const resultRaw = document.getElementById('scan-raw');
-                resultBox.classList.add('show');
-                resultRaw.textContent = `${passenger.name} | Vol: ${passenger.flight} | Porte: ${passenger.gate}`;
-                document.getElementById('manual-scan').value = '';
-            } else {
-                alert('❌ Passager non trouvé');
+            try {
+                cameraStream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: 'environment' } 
+                });
+                video.srcObject = cameraStream;
+                video.onloadedmetadata = () => {
+                    video.play();
+                };
+            } catch (err) {
+                alert('❌ Impossible d\'accéder à la caméra. Vérifiez les permissions.');
+                modal.classList.remove('active');
             }
+        }
+
+        function closeCamera() {
+            const modal = document.getElementById('cam-modal');
+            const video = document.getElementById('cam-video');
+            
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                cameraStream = null;
+            }
+            
+            video.srcObject = null;
+            modal.classList.remove('active');
+        }
+
+        function scanQRCode() {
+            const video = document.getElementById('cam-video');
+            const canvas = document.getElementById('cam-canvas');
+            const ctx = canvas.getContext('2d');
+
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0);
+
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const code = jsQR(imageData.data, imageData.width, imageData.height);
+
+            if (code) {
+                // Parse QR code data (format: "Name|Flight|Gate")
+                const data = code.data.split('|');
+                if (data.length === 3) {
+                    const [name, flight, gate] = data;
+                    addPassengerFromQR(name.trim(), flight.trim(), gate.trim());
+                    closeCamera();
+                } else {
+                    alert('❌ Format QR invalide. Format attendu: "Nom|Vol|Porte"');
+                }
+            } else {
+                alert('⏳ Aucun code QR détecté. Veuillez réessayer.');
+            }
+        }
+
+        function addPassengerFromQR(name, flight, gate) {
+            passengers.push({
+                id: nextId++,
+                name: name,
+                flight: flight,
+                gate: gate,
+                status: 'waiting',
+                destination: 'Destination inconnue'
+            });
+
+            updateAll();
+            showNotification(`${name} ajouté via QR ✅`);
+        }
+
+        // ═════════════════════════════════ ADD NEW PASSENGER MANUALLY ═════════════════════════════════
+        function addNewPassenger() {
+            const name = document.getElementById('input-name').value.trim();
+            const flight = document.getElementById('input-flight').value.trim().toUpperCase();
+            const gate = document.getElementById('input-gate').value.trim();
+
+            if (!name || !flight || !gate) {
+                alert('❌ Veuillez remplir tous les champs');
+                return;
+            }
+
+            passengers.push({
+                id: nextId++,
+                name: name,
+                flight: flight,
+                gate: gate,
+                status: 'waiting',
+                destination: 'Destination inconnue'
+            });
+
+            // Clear inputs
+            document.getElementById('input-name').value = '';
+            document.getElementById('input-flight').value = '';
+            document.getElementById('input-gate').value = '';
+
+            updateAll();
+            showNotification(`${name} ajouté manuellement ✅`);
         }
 
         // ═════════════════════════════════ PASSENGER ACTIONS ═════════════════════════════════
@@ -876,8 +1160,8 @@
             if (activePassengers.length === 0) {
                 agentList.innerHTML = `
                     <div class="empty-state" style="grid-column: 1 / -1;">
-                        <div class="empty-icon">✅</div>
-                        <p style="color: var(--text-light);">Aucune demande d'assistance</p>
+                        <div class="empty-icon">📭</div>
+                        <p style="color: var(--text-light);">Aucun passager en attente</p>
                     </div>
                 `;
             } else {
@@ -889,7 +1173,6 @@
                             <div class="pax-details"><strong>Vol:</strong> ${pax.flight}</div>
                             <div class="pax-details"><strong>Porte:</strong> ${pax.gate}</div>
                             <div class="pax-details"><strong>Destination:</strong> ${pax.destination}</div>
-                            <div class="pax-details"><strong>Heure:</strong> ${pax.time}</div>
                             <div class="wheelchair-icon">
                                 ${pax.status === 'waiting' ? '⏳' : '<span class="wheelchair-animated">♿️🚶🏻</span>'}
                             </div>
