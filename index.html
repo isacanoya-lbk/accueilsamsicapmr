@@ -167,7 +167,7 @@
             letter-spacing: 1px;
         }
 
-        /* ═════════════════════════════════ TABS SCANNER/MANUAL ═════════════════════════════════ */
+        /* ═════════════════��═══════════════ TABS SCANNER/MANUAL ═════════════════════════════════ */
         .input-tabs {
             display: flex;
             gap: 8px;
@@ -209,7 +209,7 @@
             display: block;
         }
 
-        /* ═════════════════════════════════ SCANNER ZONE ══════════════��══════════════════ */
+        /* ═════════════════════════════════ SCANNER ZONE ═════════════════════════════════ */
         .scanner-zone {
             background: rgba(255, 255, 255, 0.95);
             border: 2px solid var(--neon-cyan);
@@ -861,6 +861,21 @@
             }
         }
 
+        @keyframes removeCard {
+            from {
+                opacity: 1;
+                transform: scale(1);
+            }
+            to {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+        }
+
+        .removing {
+            animation: removeCard 0.3s ease forwards !important;
+        }
+
         /* ═════════════════════════════════ RESPONSIVE ═════════════════════════════════ */
         @media (max-width: 768px) {
             #mode-bar {
@@ -1050,14 +1065,49 @@
 
     <script>
         // ═════════════════════════════════ DATA ═════════════════════════════════
-        let passengers = [
-            { id: 1, name: 'Sophie Martin', flight: 'AF127', gate: '12', status: 'waiting', destination: 'Paris CDG', source: 'Manuel', deviceType: '🖥️ Ordinateur', deviceIP: 'N/A', connectionType: 'WiFi' },
-            { id: 2, name: 'Jean Dupont', flight: 'BA204', gate: '8', status: 'waiting', destination: 'Londres LHR', source: 'Manuel', deviceType: '🖥️ Ordinateur', deviceIP: 'N/A', connectionType: 'WiFi' },
-        ];
-
-        let nextId = 3;
+        let passengers = [];
+        let nextId = 1;
         let cameraStream = null;
         let currentDeviceInfo = { type: '🖥️ Ordinateur', connectionType: 'WiFi', ip: 'N/A' };
+
+        // ═════════════════════════════════ LOCAL STORAGE SYNC ═════════════════════════════════
+        function savePassengers() {
+            localStorage.setItem('passengers', JSON.stringify(passengers));
+            localStorage.setItem('nextId', nextId.toString());
+            broadcastUpdate();
+        }
+
+        function loadPassengers() {
+            const saved = localStorage.getItem('passengers');
+            const savedId = localStorage.getItem('nextId');
+            if (saved) {
+                passengers = JSON.parse(saved);
+            }
+            if (savedId) {
+                nextId = parseInt(savedId);
+            } else {
+                nextId = passengers.length > 0 ? Math.max(...passengers.map(p => p.id)) + 1 : 1;
+            }
+            updateAll();
+        }
+
+        // ═════════════════════════════════ BROADCAST UPDATES ═════════════════════════════════
+        function broadcastUpdate() {
+            // Émettre un événement custom pour synchroniser entre onglets
+            window.dispatchEvent(new CustomEvent('passengersUpdated'));
+        }
+
+        // Écouter les changements depuis d'autres onglets
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'passengers') {
+                loadPassengers();
+            }
+        });
+
+        // Écouter les événements custom
+        window.addEventListener('passengersUpdated', () => {
+            updateAll();
+        });
 
         // ═════════════════════════════════ GET DEVICE INFO ═════════════════════════════════
         function getDeviceInfo() {
@@ -1065,7 +1115,7 @@
             let deviceType = '🖥️ Ordinateur';
             let source = 'Scanner';
 
-            if (/Mobile|Android|iPhone|iPad|iPod/.test(ua)) {
+            if (/Mobile|Android|iPhone|iPod/.test(ua)) {
                 deviceType = '📱 Téléphone';
             } else if (/Tablet|iPad/.test(ua)) {
                 deviceType = '📱 Tablette';
@@ -1124,7 +1174,7 @@
             updateAll();
         }
 
-        // ═════════════════════════════════ TAB SWITCHING ════════════════════��════════════
+        // ═════════════════════════════════ TAB SWITCHING ═════════════════════════════════
         function switchTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -1210,7 +1260,7 @@
                 connectionType: currentDeviceInfo.connectionType
             });
 
-            updateAll();
+            savePassengers();
             showNotification(`${name} ajouté via QR (${deviceInfo.type}) ✅`);
         }
 
@@ -1242,7 +1292,7 @@
             document.getElementById('input-flight').value = '';
             document.getElementById('input-gate').value = '';
 
-            updateAll();
+            savePassengers();
             showNotification(`${name} ajouté manuellement ✅`);
         }
 
@@ -1251,7 +1301,7 @@
             const passenger = passengers.find(p => p.id === id);
             if (passenger) {
                 passenger.status = 'coming';
-                updateAll();
+                savePassengers();
                 showNotification('Agent arrivé auprès du passager ✅');
             }
         }
@@ -1259,9 +1309,20 @@
         function validatePassenger(id) {
             const passenger = passengers.find(p => p.id === id);
             if (passenger) {
-                passenger.status = 'completed';
-                updateAll();
-                showNotification(`${passenger.name} a quitté le système ✅`);
+                // Anim de suppression
+                const card = document.querySelector(`[data-pax-id="${id}"]`);
+                if (card) {
+                    card.classList.add('removing');
+                    setTimeout(() => {
+                        passengers = passengers.filter(p => p.id !== id);
+                        savePassengers();
+                        showNotification(`${passenger.name} a quitté le système ✅`);
+                    }, 300);
+                } else {
+                    passengers = passengers.filter(p => p.id !== id);
+                    savePassengers();
+                    showNotification(`${passenger.name} a quitté le système ✅`);
+                }
             }
         }
 
@@ -1271,7 +1332,7 @@
                 const newName = prompt('Nouveau nom :', passenger.name);
                 if (newName) {
                     passenger.name = newName;
-                    updateAll();
+                    savePassengers();
                     showNotification('Passager modifié ✅');
                 }
             }
@@ -1292,7 +1353,7 @@
                 `;
             } else {
                 agentList.innerHTML = activePassengers.map(pax => `
-                    <div class="pax-card status-${pax.status}">
+                    <div class="pax-card status-${pax.status}" data-pax-id="${pax.id}">
                         <span class="pax-status ${pax.status}">${pax.status === 'waiting' ? '⏳ En attente' : '✅ Agent arrive'}</span>
                         <div class="pax-info">
                             <div class="pax-name">${pax.name}</div>
@@ -1328,7 +1389,7 @@
                 `;
             } else {
                 displayList.innerHTML = activePassengers.map(pax => `
-                    <tr class="fids-tr status-${pax.status}">
+                    <tr class="fids-tr status-${pax.status}" data-pax-id="${pax.id}">
                         <td class="fids-td fids-name">${pax.name}</td>
                         <td class="fids-td fids-flight">${pax.flight}</td>
                         <td class="fids-td"><span class="fids-gate">${pax.gate}</span></td>
@@ -1392,7 +1453,7 @@
         getDeviceInfo();
         getConnectionType();
         getIPAddress();
-        updateAll();
+        loadPassengers();
         updateClock();
 
         // Update connection info when connection changes
