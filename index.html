@@ -209,7 +209,7 @@
             display: block;
         }
 
-        /* ═════════════════════════════════ SCANNER ZONE ═════════════════════════════════ */
+        /* ═════════════════════════════════ SCANNER ZONE ══════════════��══════════════════ */
         .scanner-zone {
             background: rgba(255, 255, 255, 0.95);
             border: 2px solid var(--neon-cyan);
@@ -266,6 +266,8 @@
             display: flex;
             gap: 12px;
             align-items: center;
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
         .btn-close-cam {
@@ -302,6 +304,13 @@
         .btn-scan:hover {
             background: var(--samsic-green);
             color: white;
+        }
+
+        .device-info {
+            color: var(--neon-cyan);
+            font-size: 12px;
+            font-weight: 600;
+            text-align: center;
         }
 
         .btn-start-cam {
@@ -413,7 +422,7 @@
             margin-top: 8px;
         }
 
-        /* ══════════════════��══════════════ PASSENGER LIST ═════════════════════════════════ */
+        /* ═════════════════════════════════ PASSENGER LIST ═════════════════════════════════ */
         .list-header {
             display: flex;
             align-items: center;
@@ -527,6 +536,16 @@
             font-weight: 700;
         }
 
+        .device-source {
+            font-size: 11px;
+            color: var(--neon-cyan);
+            margin-top: 8px;
+            padding: 8px;
+            background: rgba(0, 217, 255, 0.1);
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
         .wheelchair-icon {
             font-size: 24px;
             margin: 8px 0;
@@ -628,6 +647,8 @@
             align-items: center;
             justify-content: space-between;
             box-shadow: 0 0 30px rgba(0, 217, 255, 0.3);
+            flex-wrap: wrap;
+            gap: 20px;
         }
 
         .fids-title {
@@ -646,6 +667,21 @@
             letter-spacing: 2px;
             font-weight: 700;
             text-shadow: 0 0 20px rgba(255, 224, 51, 0.8);
+        }
+
+        .connection-info {
+            background: rgba(0, 217, 255, 0.1);
+            border: 1px solid var(--neon-cyan);
+            border-radius: 10px;
+            padding: 12px 16px;
+            color: var(--neon-cyan);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            text-shadow: 0 0 5px rgba(0, 217, 255, 0.5);
+            flex: 1;
+            min-width: 250px;
         }
 
         .fids-table-wrap {
@@ -723,6 +759,16 @@
             font-weight: 900;
             color: #FFE033;
             text-shadow: 0 0 15px rgba(255, 224, 51, 0.6);
+        }
+
+        .fids-device {
+            font-size: 12px;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 8px rgba(0, 217, 255, 0.3);
+            padding: 4px 8px;
+            background: rgba(0, 217, 255, 0.1);
+            border-radius: 4px;
+            margin-top: 4px;
         }
 
         .fids-badge {
@@ -858,6 +904,10 @@
                 padding: 12px 10px;
                 font-size: 12px;
             }
+
+            .connection-info {
+                min-width: 100%;
+            }
         }
     </style>
 </head>
@@ -940,6 +990,9 @@
     <div id="cam-modal">
         <video id="cam-video" autoplay playsinline></video>
         <canvas id="cam-canvas"></canvas>
+        <div class="device-info">
+            <span id="device-type">📱 Périphérique détecté</span>
+        </div>
         <div class="cam-controls">
             <button class="btn-scan" onclick="scanQRCode()">📍 SCANNER</button>
             <button class="btn-close-cam" onclick="closeCamera()">✗ FERMER</button>
@@ -951,6 +1004,10 @@
         <div class="fids-header">
             <div class="fids-title">✈️ LISTE D'ASSISTANCE APMR</div>
             <div class="fids-clock" id="display-clock">00:00</div>
+            <div class="connection-info">
+                📡 <span id="connection-type">WiFi</span> | 🖥️ <span id="device-info">Ordinateur</span><br>
+                🌐 IP: <span id="ip-address">000.000.000.000</span>
+            </div>
         </div>
         <div class="fids-table-wrap">
             <table class="fids-table">
@@ -959,6 +1016,7 @@
                         <th>👤 Passager</th>
                         <th>✈️ Vol</th>
                         <th>🚪 Porte</th>
+                        <th>📱 Source</th>
                         <th>📊 Statut</th>
                     </tr>
                 </thead>
@@ -993,14 +1051,71 @@
     <script>
         // ═════════════════════════════════ DATA ═════════════════════════════════
         let passengers = [
-            { id: 1, name: 'Sophie Martin', flight: 'AF127', gate: '12', status: 'waiting', destination: 'Paris CDG' },
-            { id: 2, name: 'Jean Dupont', flight: 'BA204', gate: '8', status: 'waiting', destination: 'Londres LHR' },
+            { id: 1, name: 'Sophie Martin', flight: 'AF127', gate: '12', status: 'waiting', destination: 'Paris CDG', source: 'Manuel', deviceType: '🖥️ Ordinateur', deviceIP: 'N/A', connectionType: 'WiFi' },
+            { id: 2, name: 'Jean Dupont', flight: 'BA204', gate: '8', status: 'waiting', destination: 'Londres LHR', source: 'Manuel', deviceType: '🖥️ Ordinateur', deviceIP: 'N/A', connectionType: 'WiFi' },
         ];
 
         let nextId = 3;
         let cameraStream = null;
+        let currentDeviceInfo = { type: '🖥️ Ordinateur', connectionType: 'WiFi', ip: 'N/A' };
 
-        // ═════════════════════════════════ VIEW SWITCHING ═════���═══════════════════════════
+        // ═════════════════════════════════ GET DEVICE INFO ═════════════════════════════════
+        function getDeviceInfo() {
+            const ua = navigator.userAgent;
+            let deviceType = '🖥️ Ordinateur';
+            let source = 'Scanner';
+
+            if (/Mobile|Android|iPhone|iPad|iPod/.test(ua)) {
+                deviceType = '📱 Téléphone';
+            } else if (/Tablet|iPad/.test(ua)) {
+                deviceType = '📱 Tablette';
+            }
+
+            currentDeviceInfo.type = deviceType;
+            updateConnectionInfo();
+            return { type: deviceType, source: source };
+        }
+
+        function getConnectionType() {
+            const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            let type = 'WiFi';
+
+            if (connection) {
+                const effectiveType = connection.effectiveType;
+                if (effectiveType === '4g') {
+                    type = '4G';
+                } else if (effectiveType === '3g') {
+                    type = '3G';
+                } else if (effectiveType === '2g') {
+                    type = '2G';
+                } else if (effectiveType === 'slow-2g') {
+                    type = '2G (Lent)';
+                }
+            }
+
+            currentDeviceInfo.connectionType = type;
+            return type;
+        }
+
+        async function getIPAddress() {
+            try {
+                const response = await fetch('https://api.ipify.org?format=json');
+                const data = await response.json();
+                currentDeviceInfo.ip = data.ip;
+                updateConnectionInfo();
+            } catch (e) {
+                currentDeviceInfo.ip = 'Non disponible';
+            }
+        }
+
+        function updateConnectionInfo() {
+            document.getElementById('device-type').textContent = currentDeviceInfo.type;
+            document.getElementById('connection-type').textContent = currentDeviceInfo.connectionType;
+            document.getElementById('device-info').textContent = currentDeviceInfo.type;
+            document.getElementById('ip-address').textContent = currentDeviceInfo.ip;
+        }
+
+        // ═════════════════════════════════ VIEW SWITCHING ═════════════════════════════════
         function switchView(viewName) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
@@ -1009,7 +1124,7 @@
             updateAll();
         }
 
-        // ═════════════════════════════════ TAB SWITCHING ═════════════════════════════════
+        // ═════════════════════════════════ TAB SWITCHING ════════════════════��════════════
         function switchTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -1022,6 +1137,9 @@
             const modal = document.getElementById('cam-modal');
             const video = document.getElementById('cam-video');
             modal.classList.add('active');
+
+            getDeviceInfo();
+            updateConnectionInfo();
 
             try {
                 cameraStream = await navigator.mediaDevices.getUserMedia({ 
@@ -1063,7 +1181,6 @@
             const code = jsQR(imageData.data, imageData.width, imageData.height);
 
             if (code) {
-                // Parse QR code data (format: "Name|Flight|Gate")
                 const data = code.data.split('|');
                 if (data.length === 3) {
                     const [name, flight, gate] = data;
@@ -1078,17 +1195,23 @@
         }
 
         function addPassengerFromQR(name, flight, gate) {
+            const deviceInfo = getDeviceInfo();
+            
             passengers.push({
                 id: nextId++,
                 name: name,
                 flight: flight,
                 gate: gate,
                 status: 'waiting',
-                destination: 'Destination inconnue'
+                destination: 'Destination inconnue',
+                source: '📷 Scanner QR',
+                deviceType: deviceInfo.type,
+                deviceIP: currentDeviceInfo.ip,
+                connectionType: currentDeviceInfo.connectionType
             });
 
             updateAll();
-            showNotification(`${name} ajouté via QR ✅`);
+            showNotification(`${name} ajouté via QR (${deviceInfo.type}) ✅`);
         }
 
         // ═════════════════════════════════ ADD NEW PASSENGER MANUALLY ═════════════════════════════════
@@ -1108,10 +1231,13 @@
                 flight: flight,
                 gate: gate,
                 status: 'waiting',
-                destination: 'Destination inconnue'
+                destination: 'Destination inconnue',
+                source: '✍️ Manuel',
+                deviceType: currentDeviceInfo.type,
+                deviceIP: currentDeviceInfo.ip,
+                connectionType: currentDeviceInfo.connectionType
             });
 
-            // Clear inputs
             document.getElementById('input-name').value = '';
             document.getElementById('input-flight').value = '';
             document.getElementById('input-gate').value = '';
@@ -1173,6 +1299,7 @@
                             <div class="pax-details"><strong>Vol:</strong> ${pax.flight}</div>
                             <div class="pax-details"><strong>Porte:</strong> ${pax.gate}</div>
                             <div class="pax-details"><strong>Destination:</strong> ${pax.destination}</div>
+                            <div class="device-source">${pax.source} | ${pax.deviceType}</div>
                             <div class="wheelchair-icon">
                                 ${pax.status === 'waiting' ? '⏳' : '<span class="wheelchair-animated">♿️🚶🏻</span>'}
                             </div>
@@ -1193,7 +1320,7 @@
             if (activePassengers.length === 0) {
                 displayList.innerHTML = `
                     <tr>
-                        <td colspan="4" class="empty-state" style="padding: 40px;">
+                        <td colspan="5" class="empty-state" style="padding: 40px;">
                             <div class="empty-icon">✅</div>
                             <p>Tous les passagers ont été servis</p>
                         </td>
@@ -1205,6 +1332,10 @@
                         <td class="fids-td fids-name">${pax.name}</td>
                         <td class="fids-td fids-flight">${pax.flight}</td>
                         <td class="fids-td"><span class="fids-gate">${pax.gate}</span></td>
+                        <td class="fids-td">
+                            <div class="fids-device">${pax.source}</div>
+                            <div class="fids-device">${pax.deviceType}</div>
+                        </td>
                         <td class="fids-td"><span class="fids-badge ${pax.status}">${pax.status === 'waiting' ? '⏳ ATTENTE' : '♿️ AGENT'}</span></td>
                     </tr>
                 `).join('');
@@ -1258,8 +1389,20 @@
 
         // Initialization
         setInterval(updateClock, 1000);
+        getDeviceInfo();
+        getConnectionType();
+        getIPAddress();
         updateAll();
         updateClock();
+
+        // Update connection info when connection changes
+        const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+        if (connection) {
+            connection.addEventListener('change', () => {
+                getConnectionType();
+                updateConnectionInfo();
+            });
+        }
     </script>
 
 </body>
