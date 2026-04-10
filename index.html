@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -7,1464 +8,575 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --adp-blue: #0055a4;
-            --adp-dark: #003d7a;
-            --samsic-green: #00a651;
-            --accent-orange: #ff6b00;
-            --text-dark: #1a2a4a;
-            --text-light: #6b7a9e;
-            --white: #ffffff;
-            --bg-light: #f5f8fc;
-            --error: #e00;
-            --success: #00e676;
-            --neon-cyan: #00d9ff;
-            --neon-purple: #d900ff;
-        }
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, var(--bg-light) 0%, #e8f0ff 100%);
-            color: var(--text-dark);
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        /* ═════════════════════════════════ MODE BAR ═════════════════════════════════ */
-        #mode-bar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 999;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 24px;
-            background: linear-gradient(90deg, var(--adp-blue), var(--adp-dark));
-            box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
-            backdrop-filter: blur(10px);
-            border-bottom: 2px solid var(--neon-cyan);
-        }
-
-        .mode-bar-left {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .mode-bar-left img {
-            height: 40px;
-            object-fit: contain;
-            filter: brightness(0) invert(1) drop-shadow(0 0 10px var(--neon-cyan));
-        }
-
-        .mode-btn {
-            font-family: 'Poppins', sans-serif;
-            font-size: 13px;
-            font-weight: 700;
-            padding: 10px 20px;
-            border-radius: 25px;
-            border: 2px solid var(--neon-cyan);
-            background: rgba(0, 217, 255, 0.1);
-            color: var(--neon-cyan);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 0 0 10px rgba(0, 217, 255, 0.2);
-        }
-
-        .mode-btn:hover {
-            background: rgba(0, 217, 255, 0.25);
-            box-shadow: 0 0 20px rgba(0, 217, 255, 0.5);
-            transform: translateY(-2px);
-        }
-
-        .mode-btn.active {
-            background: var(--neon-cyan);
-            color: var(--adp-dark);
-            box-shadow: 0 0 30px rgba(0, 217, 255, 0.8);
-            text-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
-        }
-
-        .sync-indicator {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--neon-cyan);
-            font-size: 12px;
-            font-weight: 700;
-            letter-spacing: 1px;
-        }
-
-        .sync-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: var(--success);
-            box-shadow: 0 0 10px var(--success), inset 0 0 5px rgba(255, 255, 255, 0.5);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        /* ═════════════════════════════════ VIEWS ═════════════════════════════════ */
-        .view {
-            display: none;
-            padding-top: 70px;
-            min-height: 100vh;
-            position: relative;
-            z-index: 1;
-            animation: fadeIn 0.5s ease;
-        }
-
-        .view.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        /* ═════════════════════════════════ AGENT VIEW ═════════════════════════════════ */
-        #agent-view {
-            padding: 70px 20px 30px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .agent-title {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .agent-title h1 {
-            font-size: clamp(24px, 4vw, 42px);
-            font-weight: 900;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            background: linear-gradient(90deg, var(--adp-blue), var(--neon-cyan), var(--samsic-green));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 0 20px rgba(0, 217, 255, 0.4));
-            margin-bottom: 8px;
-        }
-
-        .agent-title p {
-            color: var(--text-light);
-            font-size: 14px;
-            letter-spacing: 1px;
-        }
-
-        /* ═════════════════��═══════════════ TABS SCANNER/MANUAL ═════════════════════════════════ */
-        .input-tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
-            border-bottom: 2px solid var(--neon-cyan);
-        }
-
-        .tab-btn {
-            flex: 1;
-            padding: 12px 16px;
-            font-family: 'Poppins', sans-serif;
-            font-size: 13px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            background: transparent;
-            color: var(--text-light);
-            border: none;
-            border-bottom: 3px solid transparent;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .tab-btn:hover {
-            color: var(--neon-cyan);
-        }
-
-        .tab-btn.active {
-            color: var(--neon-cyan);
-            border-bottom-color: var(--neon-cyan);
-            text-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        /* ═════════════════════════════════ SCANNER ZONE ═════════════════════════════════ */
-        .scanner-zone {
-            background: rgba(255, 255, 255, 0.95);
-            border: 2px solid var(--neon-cyan);
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 0 30px rgba(0, 217, 255, 0.2);
-            backdrop-filter: blur(10px);
-        }
-
-        .scanner-title {
-            font-size: 14px;
-            font-weight: 800;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: var(--neon-cyan);
-            margin-bottom: 20px;
-            text-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
-        }
-
-        /* SCANNER MODE */
-        #cam-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            z-index: 10000;
-            background: rgba(0, 0, 0, 0.95);
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 20px;
-        }
-
-        #cam-modal.active {
-            display: flex;
-        }
-
-        #cam-video {
-            width: 100%;
-            max-width: 500px;
-            border-radius: 16px;
-            border: 3px solid var(--neon-cyan);
-            box-shadow: 0 0 30px rgba(0, 217, 255, 0.6);
-        }
-
-        #cam-canvas {
-            display: none;
-        }
-
-        .cam-controls {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .btn-close-cam {
-            font-family: 'Poppins', sans-serif;
-            font-size: 13px;
-            font-weight: 700;
-            padding: 12px 24px;
-            border: 2px solid var(--error);
-            border-radius: 10px;
-            background: rgba(255, 23, 68, 0.1);
-            color: var(--error);
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn-close-cam:hover {
-            background: var(--error);
-            color: white;
-        }
-
-        .btn-scan {
-            font-family: 'Poppins', sans-serif;
-            font-size: 13px;
-            font-weight: 700;
-            padding: 12px 24px;
-            border: 2px solid var(--samsic-green);
-            border-radius: 10px;
-            background: rgba(0, 166, 81, 0.1);
-            color: var(--samsic-green);
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn-scan:hover {
-            background: var(--samsic-green);
-            color: white;
-        }
-
-        .device-info {
-            color: var(--neon-cyan);
-            font-size: 12px;
-            font-weight: 600;
-            text-align: center;
-        }
-
-        .btn-start-cam {
-            font-family: 'Poppins', sans-serif;
-            font-size: 14px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            padding: 14px 28px;
-            border: 2px solid var(--neon-cyan);
-            border-radius: 10px;
-            background: rgba(0, 217, 255, 0.1);
-            color: var(--neon-cyan);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 0 15px rgba(0, 217, 255, 0.3);
-            width: 100%;
-        }
-
-        .btn-start-cam:hover {
-            background: rgba(0, 217, 255, 0.25);
-            box-shadow: 0 0 25px rgba(0, 217, 255, 0.6);
-            transform: translateY(-3px);
-        }
-
-        /* MANUAL MODE */
-        .scan-form {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr auto;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .form-group label {
-            font-size: 12px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            color: var(--text-light);
-        }
-
-        .scan-input {
-            padding: 12px 16px;
-            font-family: 'Poppins', sans-serif;
-            font-size: 14px;
-            border: 2px solid var(--neon-cyan);
-            border-radius: 10px;
-            background: rgba(0, 217, 255, 0.05);
-            color: var(--text-dark);
-            transition: all 0.3s ease;
-        }
-
-        .scan-input:focus {
-            outline: none;
-            border-color: var(--neon-cyan);
-            box-shadow: 0 0 20px rgba(0, 217, 255, 0.4);
-            background: rgba(0, 217, 255, 0.1);
-        }
-
-        .btn-add-passenger {
-            align-self: flex-end;
-            font-family: 'Poppins', sans-serif;
-            font-size: 13px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            padding: 12px 24px;
-            border: 2px solid var(--samsic-green);
-            border-radius: 10px;
-            background: rgba(0, 166, 81, 0.1);
-            color: var(--samsic-green);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 0 15px rgba(0, 166, 81, 0.3);
-        }
-
-        .btn-add-passenger:hover {
-            background: var(--samsic-green);
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 0 25px rgba(0, 166, 81, 0.6);
-        }
-
-        #scan-result-box {
-            display: none;
-            background: rgba(0, 230, 118, 0.1);
-            border: 2px solid var(--success);
-            border-radius: 12px;
-            padding: 16px;
-            margin-top: 16px;
-            box-shadow: 0 0 15px rgba(0, 230, 118, 0.2);
-        }
-
-        #scan-result-box.show {
-            display: block;
-            animation: slideIn 0.4s ease;
-        }
-
-        #scan-raw {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 13px;
-            color: var(--text-dark);
-            margin-top: 8px;
-        }
-
-        /* ═════════════════════════════════ PASSENGER LIST ═════════════════════════════════ */
-        .list-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-
-        .list-header h2 {
-            font-size: 16px;
-            font-weight: 800;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: var(--neon-cyan);
-            text-shadow: 0 0 10px rgba(0, 217, 255, 0.4);
-        }
-
-        .count-badge {
-            background: linear-gradient(135deg, var(--adp-blue), var(--neon-cyan));
-            color: white;
-            font-size: 13px;
-            font-weight: 800;
-            padding: 6px 14px;
-            border-radius: 20px;
-            box-shadow: 0 0 15px rgba(0, 217, 255, 0.4);
-        }
-
-        .passenger-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 16px;
-            margin-bottom: 30px;
-        }
-
-        .pax-card {
-            background: white;
-            border: 2px solid var(--adp-blue);
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: 0 4px 20px rgba(0, 85, 164, 0.15);
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            animation: slideIn 0.4s ease;
-        }
-
-        .pax-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--adp-blue), var(--samsic-green));
-        }
-
-        .pax-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 30px rgba(0, 85, 164, 0.25);
-            border-color: var(--neon-cyan);
-        }
-
-        .pax-card.status-coming {
-            border-color: var(--samsic-green);
-            background: rgba(0, 166, 81, 0.05);
-        }
-
-        .pax-status {
-            display: inline-block;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            margin-bottom: 12px;
-            text-transform: uppercase;
-        }
-
-        .pax-status.waiting {
-            background: rgba(245, 166, 35, 0.2);
-            color: #ff6b00;
-            border: 1px solid #ff6b00;
-        }
-
-        .pax-status.coming {
-            background: rgba(0, 230, 118, 0.2);
-            color: var(--success);
-            border: 1px solid var(--success);
-            animation: pulse 1.5s infinite;
-        }
-
-        .pax-info {
-            margin-bottom: 16px;
-        }
-
-        .pax-name {
-            font-size: 18px;
-            font-weight: 800;
-            color: var(--text-dark);
-            margin-bottom: 4px;
-            letter-spacing: 0.5px;
-        }
-
-        .pax-details {
-            font-size: 13px;
-            color: var(--text-light);
-            margin-bottom: 8px;
-        }
-
-        .pax-details strong {
-            color: var(--adp-blue);
-            font-weight: 700;
-        }
-
-        .device-source {
-            font-size: 11px;
-            color: var(--neon-cyan);
-            margin-top: 8px;
-            padding: 8px;
-            background: rgba(0, 217, 255, 0.1);
-            border-radius: 6px;
-            font-weight: 600;
-        }
-
-        .wheelchair-icon {
-            font-size: 24px;
-            margin: 8px 0;
-            display: flex;
-            gap: 4px;
-            align-items: center;
-        }
-
-        .wheelchair-animated {
-            display: inline-block;
-            animation: wheelchairMove 0.8s ease-in-out;
-        }
-
-        @keyframes wheelchairMove {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(3px); }
-            50% { transform: translateX(6px); }
-            75% { transform: translateX(3px); }
-        }
-
-        .pax-actions {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin-top: 16px;
-            padding-top: 16px;
-            border-top: 1px dashed var(--neon-cyan);
-        }
-
-        .btn {
-            flex: 1;
-            min-width: 100px;
-            font-family: 'Poppins', sans-serif;
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 0.8px;
-            text-transform: uppercase;
-            padding: 10px 12px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        }
-
-        .btn:active {
-            transform: translateY(0);
-        }
-
-        .btn-coming {
-            background: rgba(0, 166, 81, 0.15);
-            color: var(--samsic-green);
-            border: 1px solid var(--samsic-green);
-        }
-
-        .btn-coming:hover {
-            background: var(--samsic-green);
-            color: white;
-        }
-
-        .btn-valid {
-            background: rgba(0, 230, 118, 0.15);
-            color: var(--success);
-            border: 1px solid var(--success);
-        }
-
-        .btn-valid:hover {
-            background: var(--success);
-            color: white;
-        }
-
-        .btn-edit {
-            background: rgba(0, 217, 255, 0.15);
-            color: var(--neon-cyan);
-            border: 1px solid var(--neon-cyan);
-        }
-
-        .btn-edit:hover {
-            background: var(--neon-cyan);
-            color: var(--adp-dark);
-        }
-
-        /* ═════════════════════════════════ DISPLAY VIEW ═════════════════════════════════ */
-        #display-view {
-            background: linear-gradient(135deg, #060e1c 0%, #0a1428 100%);
-            padding: 70px 0 0 0 !important;
-        }
-
-        .fids-header {
-            background: linear-gradient(90deg, var(--adp-blue), var(--adp-dark));
-            border-bottom: 3px solid var(--neon-cyan);
-            padding: 20px 30px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 0 30px rgba(0, 217, 255, 0.3);
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-
-        .fids-title {
-            font-size: clamp(18px, 3vw, 36px);
-            font-weight: 900;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            color: var(--neon-cyan);
-            text-shadow: 0 0 20px rgba(0, 217, 255, 0.6);
-        }
-
-        .fids-clock {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: clamp(20px, 2.5vw, 32px);
-            color: #FFE033;
-            letter-spacing: 2px;
-            font-weight: 700;
-            text-shadow: 0 0 20px rgba(255, 224, 51, 0.8);
-        }
-
-        .connection-info {
-            background: rgba(0, 217, 255, 0.1);
-            border: 1px solid var(--neon-cyan);
-            border-radius: 10px;
-            padding: 12px 16px;
-            color: var(--neon-cyan);
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            text-shadow: 0 0 5px rgba(0, 217, 255, 0.5);
-            flex: 1;
-            min-width: 250px;
-        }
-
-        .fids-table-wrap {
-            padding: 20px 30px;
-            max-height: 70vh;
-            overflow-y: auto;
-        }
-
-        .fids-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .fids-thead th {
-            padding: 16px 20px;
-            text-align: left;
-            font-size: 13px;
-            font-weight: 800;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: var(--neon-cyan);
-            border-bottom: 2px solid var(--neon-cyan);
-            background: rgba(0, 217, 255, 0.05);
-            text-shadow: 0 0 10px rgba(0, 217, 255, 0.4);
-        }
-
-        .fids-tr {
-            border-bottom: 1px solid rgba(0, 217, 255, 0.2);
-            animation: slideIn 0.4s ease;
-            transition: all 0.3s ease;
-        }
-
-        .fids-tr:nth-child(odd) {
-            background: rgba(0, 85, 164, 0.1);
-        }
-
-        .fids-tr:nth-child(even) {
-            background: rgba(0, 85, 164, 0.05);
-        }
-
-        .fids-tr:hover {
-            background: rgba(0, 217, 255, 0.15);
-            box-shadow: inset 0 0 20px rgba(0, 217, 255, 0.1);
-        }
-
-        .fids-tr.status-coming {
-            border-left: 4px solid var(--samsic-green);
-            background: rgba(0, 166, 81, 0.1) !important;
-        }
-
-        .fids-td {
-            padding: 16px 20px;
-            color: #fff;
-            font-size: 13px;
-        }
-
-        .fids-name {
-            font-weight: 700;
-            color: var(--neon-cyan);
-            font-size: 14px;
-            text-shadow: 0 0 10px rgba(0, 217, 255, 0.3);
-        }
-
-        .fids-flight {
-            font-family: 'JetBrains Mono', monospace;
-            font-weight: 700;
-            color: #FFE033;
-            font-size: 13px;
-            text-shadow: 0 0 8px rgba(255, 224, 51, 0.5);
-        }
-
-        .fids-gate {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 16px;
-            font-weight: 900;
-            color: #FFE033;
-            text-shadow: 0 0 15px rgba(255, 224, 51, 0.6);
-        }
-
-        .fids-device {
-            font-size: 12px;
-            color: var(--neon-cyan);
-            text-shadow: 0 0 8px rgba(0, 217, 255, 0.3);
-            padding: 4px 8px;
-            background: rgba(0, 217, 255, 0.1);
-            border-radius: 4px;
-            margin-top: 4px;
-        }
-
-        .fids-badge {
-            display: inline-block;
-            font-size: 12px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            padding: 6px 12px;
-            border-radius: 8px;
-            border: 2px solid;
-            animation: blink 1.4s ease-in-out infinite;
-        }
-
-        .fids-badge.waiting {
-            color: #FFE033;
-            border-color: #FFE033;
-            background: rgba(255, 224, 51, 0.15);
-        }
-
-        .fids-badge.coming {
-            color: var(--samsic-green);
-            border-color: var(--samsic-green);
-            background: rgba(0, 166, 81, 0.15);
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.6; }
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: var(--neon-cyan);
-        }
-
-        .empty-icon {
-            font-size: 48px;
-            margin-bottom: 20px;
-        }
-
-        /* ═════════════════════════════════ STATS VIEW ═════════════════════════════════ */
-        #stats-view {
-            padding: 70px 20px 30px !important;
-            background: linear-gradient(135deg, var(--bg-light) 0%, #e8f0ff 100%);
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .stats-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 20px;
-            border-radius: 16px;
-            text-align: center;
-            border: 2px solid var(--adp-blue);
-            box-shadow: 0 0 20px rgba(0, 85, 164, 0.2);
-        }
-
-        .stat-value {
-            font-size: 32px;
-            font-weight: 900;
-            color: var(--adp-blue);
-        }
-
-        .stat-label {
-            font-size: 13px;
-            color: var(--text-light);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 700;
-            margin-top: 8px;
-        }
-
-        /* ═════════════════════════════════ ANIMATIONS ═════════════════════════════════ */
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes removeCard {
-            from {
-                opacity: 1;
-                transform: scale(1);
-            }
-            to {
-                opacity: 0;
-                transform: scale(0.8);
-            }
-        }
-
-        .removing {
-            animation: removeCard 0.3s ease forwards !important;
-        }
-
-        /* ═════════════════════════════════ RESPONSIVE ═════════════════════════════════ */
-        @media (max-width: 768px) {
-            #mode-bar {
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            .scan-form {
-                grid-template-columns: 1fr;
-            }
-
-            .btn-add-passenger {
-                align-self: auto;
-                width: 100%;
-            }
-
-            .passenger-list {
-                grid-template-columns: 1fr;
-            }
-
-            .pax-actions {
-                flex-direction: column;
-            }
-
-            .btn {
-                flex: none;
-                width: 100%;
-            }
-
-            .fids-header {
-                flex-direction: column;
-                gap: 10px;
-                text-align: center;
-            }
-
-            .fids-table-wrap {
-                padding: 15px;
-            }
-
-            .fids-td {
-                padding: 12px 10px;
-                font-size: 12px;
-            }
-
-            .connection-info {
-                min-width: 100%;
-            }
-        }
-    </style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+```
+    :root {
+        --adp-blue: #0055a4;
+        --adp-dark: #003d7a;
+        --samsic-green: #00a651;
+        --text-dark: #1a2a4a;
+        --text-light: #6b7a9e;
+        --bg-light: #f5f8fc;
+        --error: #e00;
+        --success: #00e676;
+        --neon-cyan: #00d9ff;
+    }
+
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(135deg, var(--bg-light) 0%, #e8f0ff 100%);
+        color: var(--text-dark);
+        min-height: 100vh;
+        overflow-x: hidden;
+    }
+
+    #mode-bar {
+        position: fixed; top: 0; left: 0; right: 0; z-index: 999;
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 12px 24px;
+        background: linear-gradient(90deg, var(--adp-blue), var(--adp-dark));
+        box-shadow: 0 0 20px rgba(0,217,255,0.3);
+        border-bottom: 2px solid var(--neon-cyan);
+    }
+
+    .mode-bar-left { display: flex; align-items: center; gap: 16px; }
+
+    .mode-bar-left img {
+        height: 40px; object-fit: contain;
+        filter: brightness(0) invert(1) drop-shadow(0 0 10px var(--neon-cyan));
+    }
+
+    .mode-btn {
+        font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700;
+        padding: 10px 20px; border-radius: 25px;
+        border: 2px solid var(--neon-cyan);
+        background: rgba(0,217,255,0.1); color: var(--neon-cyan);
+        cursor: pointer; transition: all 0.3s ease;
+        text-transform: uppercase; letter-spacing: 1px;
+        box-shadow: 0 0 10px rgba(0,217,255,0.2);
+    }
+    .mode-btn:hover { background: rgba(0,217,255,0.25); box-shadow: 0 0 20px rgba(0,217,255,0.5); transform: translateY(-2px); }
+    .mode-btn.active { background: var(--neon-cyan); color: var(--adp-dark); box-shadow: 0 0 30px rgba(0,217,255,0.8); }
+
+    .sync-indicator { display: flex; align-items: center; gap: 8px; color: var(--neon-cyan); font-size: 12px; font-weight: 700; letter-spacing: 1px; }
+
+    .sync-dot {
+        width: 10px; height: 10px; border-radius: 50%;
+        background: #FFE033; box-shadow: 0 0 10px #FFE033;
+        animation: pulse 2s infinite; transition: all 0.4s;
+    }
+    .sync-dot.connected { background: var(--success); box-shadow: 0 0 10px var(--success); }
+    .sync-dot.error { background: var(--error); box-shadow: 0 0 10px var(--error); }
+
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+    .view { display: none; padding-top: 70px; min-height: 100vh; animation: fadeIn 0.5s ease; }
+    .view.active { display: block; }
+    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
+    #agent-view { padding: 70px 20px 30px; max-width: 1200px; margin: 0 auto; }
+
+    .agent-title { text-align: center; margin-bottom: 30px; }
+    .agent-title h1 {
+        font-size: clamp(24px,4vw,42px); font-weight: 900; letter-spacing: 2px; text-transform: uppercase;
+        background: linear-gradient(90deg, var(--adp-blue), var(--neon-cyan), var(--samsic-green));
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        filter: drop-shadow(0 0 20px rgba(0,217,255,0.4)); margin-bottom: 8px;
+    }
+    .agent-title p { color: var(--text-light); font-size: 14px; letter-spacing: 1px; }
+
+    .input-tabs { display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 2px solid var(--neon-cyan); }
+    .tab-btn {
+        flex: 1; padding: 12px 16px; font-family: 'Poppins', sans-serif;
+        font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+        background: transparent; color: var(--text-light);
+        border: none; border-bottom: 3px solid transparent; cursor: pointer; transition: all 0.3s;
+    }
+    .tab-btn:hover { color: var(--neon-cyan); }
+    .tab-btn.active { color: var(--neon-cyan); border-bottom-color: var(--neon-cyan); text-shadow: 0 0 10px rgba(0,217,255,0.5); }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    .scanner-zone {
+        background: rgba(255,255,255,0.95); border: 2px solid var(--neon-cyan);
+        border-radius: 20px; padding: 30px; margin-bottom: 30px;
+        box-shadow: 0 0 30px rgba(0,217,255,0.2);
+    }
+    .scanner-title { font-size: 14px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: var(--neon-cyan); margin-bottom: 20px; }
+
+    #cam-modal {
+        display: none; position: fixed; top:0;left:0;right:0;bottom:0; z-index: 10000;
+        background: rgba(0,0,0,0.95); flex-direction: column; align-items: center; justify-content: center; gap: 20px;
+    }
+    #cam-modal.active { display: flex; }
+    #cam-video { width: 100%; max-width: 500px; border-radius: 16px; border: 3px solid var(--neon-cyan); box-shadow: 0 0 30px rgba(0,217,255,0.6); }
+    #cam-canvas { display: none; }
+    .cam-controls { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+    .device-info { color: var(--neon-cyan); font-size: 12px; font-weight: 600; text-align: center; }
+
+    .btn-close-cam { font-family:'Poppins',sans-serif; font-size:13px; font-weight:700; padding:12px 24px; border:2px solid var(--error); border-radius:10px; background:rgba(255,23,68,0.1); color:var(--error); cursor:pointer; transition:all 0.3s; }
+    .btn-close-cam:hover { background:var(--error); color:white; }
+    .btn-scan { font-family:'Poppins',sans-serif; font-size:13px; font-weight:700; padding:12px 24px; border:2px solid var(--samsic-green); border-radius:10px; background:rgba(0,166,81,0.1); color:var(--samsic-green); cursor:pointer; transition:all 0.3s; }
+    .btn-scan:hover { background:var(--samsic-green); color:white; }
+
+    .btn-start-cam {
+        font-family:'Poppins',sans-serif; font-size:14px; font-weight:700; letter-spacing:1px; text-transform:uppercase;
+        padding:14px 28px; border:2px solid var(--neon-cyan); border-radius:10px;
+        background:rgba(0,217,255,0.1); color:var(--neon-cyan); cursor:pointer;
+        transition:all 0.3s; box-shadow:0 0 15px rgba(0,217,255,0.3); width:100%;
+    }
+    .btn-start-cam:hover { background:rgba(0,217,255,0.25); box-shadow:0 0 25px rgba(0,217,255,0.6); transform:translateY(-3px); }
+
+    .scan-form { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 12px; margin-bottom: 16px; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group label { font-size:12px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--text-light); }
+    .scan-input { padding:12px 16px; font-family:'Poppins',sans-serif; font-size:14px; border:2px solid var(--neon-cyan); border-radius:10px; background:rgba(0,217,255,0.05); color:var(--text-dark); transition:all 0.3s; }
+    .scan-input:focus { outline:none; box-shadow:0 0 20px rgba(0,217,255,0.4); background:rgba(0,217,255,0.1); }
+    .btn-add-passenger { align-self:flex-end; font-family:'Poppins',sans-serif; font-size:13px; font-weight:700; letter-spacing:1px; text-transform:uppercase; padding:12px 24px; border:2px solid var(--samsic-green); border-radius:10px; background:rgba(0,166,81,0.1); color:var(--samsic-green); cursor:pointer; transition:all 0.3s; box-shadow:0 0 15px rgba(0,166,81,0.3); }
+    .btn-add-passenger:hover { background:var(--samsic-green); color:white; transform:translateY(-2px); }
+
+    #scan-result-box { display:none; background:rgba(0,230,118,0.1); border:2px solid var(--success); border-radius:12px; padding:16px; margin-top:16px; }
+    #scan-result-box.show { display:block; animation:slideIn 0.4s ease; }
+    #scan-raw { font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--text-dark); margin-top:8px; }
+
+    .list-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; }
+    .list-header h2 { font-size:16px; font-weight:800; letter-spacing:2px; text-transform:uppercase; color:var(--neon-cyan); text-shadow:0 0 10px rgba(0,217,255,0.4); }
+    .count-badge { background:linear-gradient(135deg,var(--adp-blue),var(--neon-cyan)); color:white; font-size:13px; font-weight:800; padding:6px 14px; border-radius:20px; box-shadow:0 0 15px rgba(0,217,255,0.4); }
+
+    .passenger-list { display:grid; grid-template-columns:repeat(auto-fill,minmax(350px,1fr)); gap:16px; margin-bottom:30px; }
+    .pax-card { background:white; border:2px solid var(--adp-blue); border-radius:16px; padding:20px; box-shadow:0 4px 20px rgba(0,85,164,0.15); position:relative; overflow:hidden; transition:all 0.3s; animation:slideIn 0.4s ease; }
+    .pax-card::before { content:''; position:absolute; top:0;left:0;right:0; height:4px; background:linear-gradient(90deg,var(--adp-blue),var(--samsic-green)); }
+    .pax-card:hover { transform:translateY(-5px); box-shadow:0 8px 30px rgba(0,85,164,0.25); border-color:var(--neon-cyan); }
+    .pax-card.status-coming { border-color:var(--samsic-green); background:rgba(0,166,81,0.05); }
+
+    .pax-status { display:inline-block; padding:6px 12px; border-radius:20px; font-size:12px; font-weight:700; letter-spacing:1px; margin-bottom:12px; text-transform:uppercase; }
+    .pax-status.waiting { background:rgba(245,166,35,0.2); color:#ff6b00; border:1px solid #ff6b00; }
+    .pax-status.coming { background:rgba(0,230,118,0.2); color:var(--success); border:1px solid var(--success); animation:pulse 1.5s infinite; }
+
+    .pax-info { margin-bottom:16px; }
+    .pax-name { font-size:18px; font-weight:800; color:var(--text-dark); margin-bottom:4px; }
+    .pax-details { font-size:13px; color:var(--text-light); margin-bottom:8px; }
+    .pax-details strong { color:var(--adp-blue); font-weight:700; }
+
+    .wheelchair-icon { font-size:24px; margin:8px 0; display:flex; gap:4px; align-items:center; }
+    .wheelchair-animated { display:inline-block; animation:wheelchairMove 0.8s ease-in-out; }
+    @keyframes wheelchairMove { 0%,100%{transform:translateX(0)} 25%{transform:translateX(3px)} 50%{transform:translateX(6px)} 75%{transform:translateX(3px)} }
+
+    .pax-actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:16px; padding-top:16px; border-top:1px dashed var(--neon-cyan); }
+    .btn { flex:1; min-width:100px; font-family:'Poppins',sans-serif; font-size:11px; font-weight:700; letter-spacing:0.8px; text-transform:uppercase; padding:10px 12px; border:none; border-radius:8px; cursor:pointer; transition:all 0.3s; white-space:nowrap; }
+    .btn:hover { transform:translateY(-2px); box-shadow:0 4px 12px rgba(0,0,0,0.2); }
+    .btn-coming { background:rgba(0,166,81,0.15); color:var(--samsic-green); border:1px solid var(--samsic-green); }
+    .btn-coming:hover { background:var(--samsic-green); color:white; }
+    .btn-valid { background:rgba(0,230,118,0.15); color:var(--success); border:1px solid var(--success); }
+    .btn-valid:hover { background:var(--success); color:white; }
+    .btn-edit { background:rgba(0,217,255,0.15); color:var(--neon-cyan); border:1px solid var(--neon-cyan); }
+    .btn-edit:hover { background:var(--neon-cyan); color:var(--adp-dark); }
+
+    #display-view { background:linear-gradient(135deg,#060e1c 0%,#0a1428 100%); padding:70px 0 0 0 !important; }
+    .fids-header { background:linear-gradient(90deg,var(--adp-blue),var(--adp-dark)); border-bottom:3px solid var(--neon-cyan); padding:20px 30px; display:flex; align-items:center; justify-content:space-between; box-shadow:0 0 30px rgba(0,217,255,0.3); flex-wrap:wrap; gap:20px; }
+    .fids-title { font-size:clamp(18px,3vw,36px); font-weight:900; letter-spacing:3px; text-transform:uppercase; color:var(--neon-cyan); text-shadow:0 0 20px rgba(0,217,255,0.6); }
+    .fids-clock { font-family:'JetBrains Mono',monospace; font-size:clamp(20px,2.5vw,32px); color:#FFE033; letter-spacing:2px; font-weight:700; text-shadow:0 0 20px rgba(255,224,51,0.8); }
+    .fids-sync-status { background:rgba(0,217,255,0.1); border:1px solid var(--neon-cyan); border-radius:10px; padding:10px 16px; color:var(--neon-cyan); font-size:12px; font-weight:700; letter-spacing:1px; text-transform:uppercase; display:flex; align-items:center; gap:8px; }
+
+    .fids-table-wrap { padding:20px 30px; max-height:70vh; overflow-y:auto; }
+    .fids-table { width:100%; border-collapse:collapse; }
+    .fids-thead th { padding:16px 20px; text-align:left; font-size:13px; font-weight:800; letter-spacing:2px; text-transform:uppercase; color:var(--neon-cyan); border-bottom:2px solid var(--neon-cyan); background:rgba(0,217,255,0.05); }
+    .fids-tr { border-bottom:1px solid rgba(0,217,255,0.2); animation:slideIn 0.4s ease; transition:all 0.3s; }
+    .fids-tr:nth-child(odd) { background:rgba(0,85,164,0.1); }
+    .fids-tr:nth-child(even) { background:rgba(0,85,164,0.05); }
+    .fids-tr:hover { background:rgba(0,217,255,0.15); }
+    .fids-tr.status-coming { border-left:4px solid var(--samsic-green); background:rgba(0,166,81,0.1) !important; }
+    .fids-td { padding:16px 20px; color:#fff; font-size:13px; }
+    .fids-name { font-weight:700; color:var(--neon-cyan); font-size:14px; }
+    .fids-flight { font-family:'JetBrains Mono',monospace; font-weight:700; color:#FFE033; }
+    .fids-gate { font-family:'JetBrains Mono',monospace; font-size:16px; font-weight:900; color:#FFE033; text-shadow:0 0 15px rgba(255,224,51,0.6); }
+    .fids-badge { display:inline-block; font-size:12px; font-weight:700; letter-spacing:1px; text-transform:uppercase; padding:6px 12px; border-radius:8px; border:2px solid; animation:blink 1.4s ease-in-out infinite; }
+    .fids-badge.waiting { color:#FFE033; border-color:#FFE033; background:rgba(255,224,51,0.15); }
+    .fids-badge.coming { color:var(--samsic-green); border-color:var(--samsic-green); background:rgba(0,166,81,0.15); }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.6} }
+
+    .empty-state { text-align:center; padding:60px 20px; color:var(--neon-cyan); }
+    .empty-icon { font-size:48px; margin-bottom:20px; }
+
+    #stats-view { padding:70px 20px 30px !important; max-width:1200px; margin:0 auto; }
+    .stats-container { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:20px; }
+    .stat-card { background:white; padding:20px; border-radius:16px; text-align:center; border:2px solid var(--adp-blue); box-shadow:0 0 20px rgba(0,85,164,0.2); }
+    .stat-value { font-size:32px; font-weight:900; color:var(--adp-blue); }
+    .stat-label { font-size:13px; color:var(--text-light); text-transform:uppercase; letter-spacing:1px; font-weight:700; margin-top:8px; }
+
+    @keyframes slideIn { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes removeCard { from{opacity:1;transform:scale(1)} to{opacity:0;transform:scale(0.8)} }
+    .removing { animation:removeCard 0.3s ease forwards !important; }
+
+    @media (max-width:768px) {
+        #mode-bar { flex-direction:column; gap:10px; }
+        .scan-form { grid-template-columns:1fr; }
+        .btn-add-passenger { align-self:auto; width:100%; }
+        .passenger-list { grid-template-columns:1fr; }
+        .pax-actions { flex-direction:column; }
+        .btn { flex:none; width:100%; }
+        .fids-header { flex-direction:column; gap:10px; text-align:center; }
+        .fids-table-wrap { padding:15px; }
+        .fids-td { padding:12px 10px; font-size:12px; }
+    }
+</style>
+```
+
 </head>
 <body>
 
-    <!-- MODE BAR -->
-    <div id="mode-bar">
-        <div class="mode-bar-left">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Groupe_ADP_logo.svg/200px-Groupe_ADP_logo.svg.png" alt="Groupe ADP">
-            <span style="color: var(--neon-cyan); font-weight: 800; font-size: 14px; letter-spacing: 2px;">SAMSIC APMR</span>
-        </div>
-        <div style="display: flex; gap: 8px;">
-            <button class="mode-btn active" onclick="switchView('agent')">🎛️ AGENT</button>
-            <button class="mode-btn" onclick="switchView('display')">📺 SALLE</button>
-            <button class="mode-btn" onclick="switchView('stats')">📊 STATS</button>
-        </div>
-        <div class="sync-indicator">
-            <div class="sync-dot"></div>
-            <span>CONNECTÉ</span>
-        </div>
+```
+<!-- MODE BAR -->
+<div id="mode-bar">
+    <div class="mode-bar-left">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Groupe_ADP_logo.svg/200px-Groupe_ADP_logo.svg.png" alt="ADP">
+        <span style="color:var(--neon-cyan);font-weight:800;font-size:14px;letter-spacing:2px;">SAMSIC APMR</span>
     </div>
+    <div style="display:flex;gap:8px;">
+        <button class="mode-btn active" onclick="switchView('agent',this)">🎛️ AGENT</button>
+        <button class="mode-btn" onclick="switchView('display',this)">📺 SALLE</button>
+        <button class="mode-btn" onclick="switchView('stats',this)">📊 STATS</button>
+    </div>
+    <div class="sync-indicator">
+        <div class="sync-dot" id="sync-dot"></div>
+        <span id="sync-label">CONNEXION...</span>
+    </div>
+</div>
 
-    <!-- AGENT VIEW -->
-    <div id="agent-view" class="view active">
-        <div class="agent-title">
-            <h1>🎛️ Assistance APMR</h1>
-            <p>Gestion des passagers en situation de handicap</p>
+<!-- AGENT VIEW -->
+<div id="agent-view" class="view active">
+    <div class="agent-title">
+        <h1>🎛️ Assistance APMR</h1>
+        <p>Gestion des passagers en situation de handicap</p>
+    </div>
+    <div class="scanner-zone">
+        <div class="scanner-title">📱 Ajouter un Passager</div>
+        <div class="input-tabs">
+            <button class="tab-btn active" onclick="switchTab('scanner',this)">📷 SCANNER QR</button>
+            <button class="tab-btn" onclick="switchTab('manual',this)">✍️ SAISIE MANUELLE</button>
         </div>
-
-        <!-- SCANNER ZONE -->
-        <div class="scanner-zone">
-            <div class="scanner-title">📱 Ajouter un Passager</div>
-            
-            <!-- TABS -->
-            <div class="input-tabs">
-                <button class="tab-btn active" onclick="switchTab('scanner')">📷 SCANNER QR</button>
-                <button class="tab-btn" onclick="switchTab('manual')">✍️ SAISIE MANUELLE</button>
+        <div id="scanner-tab" class="tab-content active">
+            <button class="btn-start-cam" onclick="openCamera()">📷 LANCER LE SCANNER QR</button>
+            <div id="scan-result-box">
+                <strong>✅ Passager scanné :</strong>
+                <div id="scan-raw"></div>
             </div>
-
-            <!-- SCANNER TAB -->
-            <div id="scanner-tab" class="tab-content active">
-                <button class="btn-start-cam" onclick="openCamera()">📷 LANCER LE SCANNER QR</button>
-                <div id="scan-result-box">
-                    <strong>✅ Passager scanné :</strong>
-                    <div id="scan-raw"></div>
+        </div>
+        <div id="manual-tab" class="tab-content">
+            <div class="scan-form">
+                <div class="form-group">
+                    <label>👤 Nom du Passager</label>
+                    <input type="text" id="input-name" class="scan-input" placeholder="Ex: Jean Dupont">
                 </div>
-            </div>
-
-            <!-- MANUAL TAB -->
-            <div id="manual-tab" class="tab-content">
-                <div class="scan-form">
-                    <div class="form-group">
-                        <label>👤 Nom du Passager</label>
-                        <input type="text" id="input-name" class="scan-input" placeholder="Ex: Jean Dupont">
-                    </div>
-                    <div class="form-group">
-                        <label>✈️ Numéro de Vol</label>
-                        <input type="text" id="input-flight" class="scan-input" placeholder="Ex: AF127">
-                    </div>
-                    <div class="form-group">
-                        <label>🚪 Porte d'Embarquement</label>
-                        <input type="text" id="input-gate" class="scan-input" placeholder="Ex: 12">
-                    </div>
-                    <button class="btn-add-passenger" onclick="addNewPassenger()">✓ AJOUTER</button>
+                <div class="form-group">
+                    <label>✈️ Numéro de Vol</label>
+                    <input type="text" id="input-flight" class="scan-input" placeholder="Ex: AF127">
                 </div>
-            </div>
-        </div>
-
-        <!-- PASSENGER LIST -->
-        <div>
-            <div class="list-header">
-                <h2>👥 PASSAGERS EN ATTENTE</h2>
-                <span class="count-badge" id="pax-count">0</span>
-            </div>
-            <div class="passenger-list" id="passenger-list-agent"></div>
-        </div>
-    </div>
-
-    <!-- CAMERA MODAL -->
-    <div id="cam-modal">
-        <video id="cam-video" autoplay playsinline></video>
-        <canvas id="cam-canvas"></canvas>
-        <div class="device-info">
-            <span id="device-type">📱 Périphérique détecté</span>
-        </div>
-        <div class="cam-controls">
-            <button class="btn-scan" onclick="scanQRCode()">📍 SCANNER</button>
-            <button class="btn-close-cam" onclick="closeCamera()">✗ FERMER</button>
-        </div>
-    </div>
-
-    <!-- DISPLAY VIEW (SALLE D'ACCUEIL) -->
-    <div id="display-view" class="view">
-        <div class="fids-header">
-            <div class="fids-title">✈️ LISTE D'ASSISTANCE APMR</div>
-            <div class="fids-clock" id="display-clock">00:00</div>
-            <div class="connection-info">
-                📡 <span id="connection-type">WiFi</span> | 🖥️ <span id="device-info">Ordinateur</span><br>
-                🌐 IP: <span id="ip-address">000.000.000.000</span>
-            </div>
-        </div>
-        <div class="fids-table-wrap">
-            <table class="fids-table">
-                <thead class="fids-thead">
-                    <tr>
-                        <th>👤 Passager</th>
-                        <th>✈️ Vol</th>
-                        <th>🚪 Porte</th>
-                        <th>📱 Source</th>
-                        <th>📊 Statut</th>
-                    </tr>
-                </thead>
-                <tbody id="passenger-list-display"></tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- STATS VIEW -->
-    <div id="stats-view" class="view">
-        <h1 style="text-align: center; font-size: 32px; color: var(--adp-blue); margin-bottom: 30px; text-transform: uppercase; letter-spacing: 2px;">📊 Statistiques</h1>
-        <div class="stats-container">
-            <div class="stat-card">
-                <div class="stat-value" id="stat-total">0</div>
-                <div class="stat-label">Total</div>
-            </div>
-            <div class="stat-card" style="border-color: #ff6b00;">
-                <div class="stat-value" style="color: #ff6b00;" id="stat-waiting">0</div>
-                <div class="stat-label">En Attente</div>
-            </div>
-            <div class="stat-card" style="border-color: var(--samsic-green);">
-                <div class="stat-value" style="color: var(--samsic-green);" id="stat-coming">0</div>
-                <div class="stat-label">Agent Arrive</div>
-            </div>
-            <div class="stat-card" style="border-color: var(--success);">
-                <div class="stat-value" style="color: var(--success);" id="stat-completed">0</div>
-                <div class="stat-label">Complétés</div>
+                <div class="form-group">
+                    <label>🚪 Porte d'Embarquement</label>
+                    <input type="text" id="input-gate" class="scan-input" placeholder="Ex: 12">
+                </div>
+                <button class="btn-add-passenger" onclick="addNewPassenger()">✓ AJOUTER</button>
             </div>
         </div>
     </div>
+    <div>
+        <div class="list-header">
+            <h2>👥 PASSAGERS EN ATTENTE</h2>
+            <span class="count-badge" id="pax-count">0</span>
+        </div>
+        <div class="passenger-list" id="passenger-list-agent"></div>
+    </div>
+</div>
 
-    <script>
-        // ═════════════════════════════════ DATA ═════════════════════════════════
-        let passengers = [];
-        let nextId = 1;
-        let cameraStream = null;
-        let currentDeviceInfo = { type: '🖥️ Ordinateur', connectionType: 'WiFi', ip: 'N/A' };
+<!-- CAMERA MODAL -->
+<div id="cam-modal">
+    <video id="cam-video" autoplay playsinline></video>
+    <canvas id="cam-canvas"></canvas>
+    <div class="device-info"><span id="device-type">📱 Périphérique</span></div>
+    <div class="cam-controls">
+        <button class="btn-scan" onclick="scanQRCode()">📍 SCANNER</button>
+        <button class="btn-close-cam" onclick="closeCamera()">✗ FERMER</button>
+    </div>
+</div>
 
-        // ═════════════════════════════════ LOCAL STORAGE SYNC ═════════════════════════════════
-        function savePassengers() {
-            localStorage.setItem('passengers', JSON.stringify(passengers));
-            localStorage.setItem('nextId', nextId.toString());
-            broadcastUpdate();
+<!-- DISPLAY VIEW -->
+<div id="display-view" class="view">
+    <div class="fids-header">
+        <div class="fids-title">✈️ LISTE D'ASSISTANCE APMR</div>
+        <div class="fids-clock" id="display-clock">00:00</div>
+        <div class="fids-sync-status">
+            <div class="sync-dot" id="display-sync-dot"></div>
+            <span id="display-sync-label">FIREBASE LIVE</span>
+        </div>
+    </div>
+    <div class="fids-table-wrap">
+        <table class="fids-table">
+            <thead class="fids-thead">
+                <tr>
+                    <th>👤 Passager</th>
+                    <th>✈️ Vol</th>
+                    <th>🚪 Porte</th>
+                    <th>📊 Statut</th>
+                </tr>
+            </thead>
+            <tbody id="passenger-list-display"></tbody>
+        </table>
+    </div>
+</div>
+
+<!-- STATS VIEW -->
+<div id="stats-view" class="view">
+    <h1 style="text-align:center;font-size:32px;color:var(--adp-blue);margin-bottom:30px;text-transform:uppercase;letter-spacing:2px;">📊 Statistiques</h1>
+    <div class="stats-container">
+        <div class="stat-card"><div class="stat-value" id="stat-total">0</div><div class="stat-label">Total</div></div>
+        <div class="stat-card" style="border-color:#ff6b00;"><div class="stat-value" style="color:#ff6b00;" id="stat-waiting">0</div><div class="stat-label">En Attente</div></div>
+        <div class="stat-card" style="border-color:var(--samsic-green);"><div class="stat-value" style="color:var(--samsic-green);" id="stat-coming">0</div><div class="stat-label">Agent Arrive</div></div>
+        <div class="stat-card" style="border-color:var(--success);"><div class="stat-value" style="color:var(--success);" id="stat-completed">0</div><div class="stat-label">Complétés</div></div>
+    </div>
+</div>
+
+<!-- FIREBASE + APP LOGIC -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getDatabase, ref, onValue, push, update, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+    // ═══════ FIREBASE CONFIG ═══════
+    const firebaseConfig = {
+        apiKey: "AIzaSyAZzzZgSWS9KLjEcd-vzCI_sw8KwVYLAIU",
+        authDomain: "accueil-samsic-apmr.firebaseapp.com",
+        databaseURL: "https://accueil-samsic-apmr-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "accueil-samsic-apmr",
+        storageBucket: "accueil-samsic-apmr.firebasestorage.app",
+        messagingSenderId: "402568203176",
+        appId: "1:402568203176:web:6be7f26b5f417eee1aeb9d"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const paxRef = ref(db, 'passengers');
+
+    // ═══════ STATE ═══════
+    let passengers = [];
+    let cameraStream = null;
+    let deviceType = '🖥️ Ordinateur';
+
+    // ═══════ SYNC STATUS ═══════
+    function setSyncStatus(status) {
+        const dot = document.getElementById('sync-dot');
+        const label = document.getElementById('sync-label');
+        const dispDot = document.getElementById('display-sync-dot');
+        const dispLabel = document.getElementById('display-sync-label');
+        [dot, dispDot].forEach(d => { if(d) d.className = 'sync-dot ' + status; });
+        if (status === 'connected') {
+            if(label) label.textContent = 'CONNECTÉ';
+            if(dispLabel) dispLabel.textContent = 'FIREBASE LIVE';
+        } else if (status === 'error') {
+            if(label) label.textContent = 'ERREUR';
+            if(dispLabel) dispLabel.textContent = 'HORS LIGNE';
         }
+    }
 
-        function loadPassengers() {
-            const saved = localStorage.getItem('passengers');
-            const savedId = localStorage.getItem('nextId');
-            if (saved) {
-                passengers = JSON.parse(saved);
-            }
-            if (savedId) {
-                nextId = parseInt(savedId);
-            } else {
-                nextId = passengers.length > 0 ? Math.max(...passengers.map(p => p.id)) + 1 : 1;
-            }
-            updateAll();
-        }
+    // ═══════ REALTIME LISTENER ═══════
+    onValue(paxRef, (snapshot) => {
+        const data = snapshot.val();
+        passengers = data
+            ? Object.entries(data).map(([fbKey, pax]) => ({ ...pax, fbKey }))
+            : [];
+        setSyncStatus('connected');
+        renderAll();
+    }, () => setSyncStatus('error'));
 
-        // ═════════════════════════════════ BROADCAST UPDATES ═════════════════════════════════
-        function broadcastUpdate() {
-            // Émettre un événement custom pour synchroniser entre onglets
-            window.dispatchEvent(new CustomEvent('passengersUpdated'));
-        }
+    // ═══════ FIREBASE WRITE HELPERS ═══════
+    async function fbAdd(data) { await push(paxRef, { ...data, createdAt: Date.now() }); }
+    async function fbUpdate(fbKey, data) { await update(ref(db, 'passengers/' + fbKey), data); }
+    async function fbRemove(fbKey) { await remove(ref(db, 'passengers/' + fbKey)); }
 
-        // Écouter les changements depuis d'autres onglets
-        window.addEventListener('storage', (e) => {
-            if (e.key === 'passengers') {
-                loadPassengers();
-            }
-        });
+    // ═══════ DEVICE ═══════
+    function detectDevice() {
+        const ua = navigator.userAgent;
+        if (/Mobile|Android|iPhone|iPod/.test(ua)) deviceType = '📱 Téléphone';
+        else if (/Tablet|iPad/.test(ua)) deviceType = '📱 Tablette';
+        else deviceType = '🖥️ Ordinateur';
+        const el = document.getElementById('device-type');
+        if (el) el.textContent = deviceType;
+    }
 
-        // Écouter les événements custom
-        window.addEventListener('passengersUpdated', () => {
-            updateAll();
-        });
+    // ═══════ VIEW / TAB SWITCHING ═══════
+    window.switchView = (name, btn) => {
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(name + '-view').classList.add('active');
+        if (btn) btn.classList.add('active');
+        renderAll();
+    };
 
-        // ═════════════════════════════════ GET DEVICE INFO ═════════════════════════════════
-        function getDeviceInfo() {
-            const ua = navigator.userAgent;
-            let deviceType = '🖥️ Ordinateur';
-            let source = 'Scanner';
+    window.switchTab = (name, btn) => {
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(name + '-tab').classList.add('active');
+        if (btn) btn.classList.add('active');
+    };
 
-            if (/Mobile|Android|iPhone|iPod/.test(ua)) {
-                deviceType = '📱 Téléphone';
-            } else if (/Tablet|iPad/.test(ua)) {
-                deviceType = '📱 Tablette';
-            }
-
-            currentDeviceInfo.type = deviceType;
-            updateConnectionInfo();
-            return { type: deviceType, source: source };
-        }
-
-        function getConnectionType() {
-            const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-            let type = 'WiFi';
-
-            if (connection) {
-                const effectiveType = connection.effectiveType;
-                if (effectiveType === '4g') {
-                    type = '4G';
-                } else if (effectiveType === '3g') {
-                    type = '3G';
-                } else if (effectiveType === '2g') {
-                    type = '2G';
-                } else if (effectiveType === 'slow-2g') {
-                    type = '2G (Lent)';
-                }
-            }
-
-            currentDeviceInfo.connectionType = type;
-            return type;
-        }
-
-        async function getIPAddress() {
-            try {
-                const response = await fetch('https://api.ipify.org?format=json');
-                const data = await response.json();
-                currentDeviceInfo.ip = data.ip;
-                updateConnectionInfo();
-            } catch (e) {
-                currentDeviceInfo.ip = 'Non disponible';
-            }
-        }
-
-        function updateConnectionInfo() {
-            document.getElementById('device-type').textContent = currentDeviceInfo.type;
-            document.getElementById('connection-type').textContent = currentDeviceInfo.connectionType;
-            document.getElementById('device-info').textContent = currentDeviceInfo.type;
-            document.getElementById('ip-address').textContent = currentDeviceInfo.ip;
-        }
-
-        // ═════════════════════════════════ VIEW SWITCHING ═════════════════════════════════
-        function switchView(viewName) {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(viewName + '-view').classList.add('active');
-            event.target.classList.add('active');
-            updateAll();
-        }
-
-        // ═════════════════════════════════ TAB SWITCHING ═════════════════════════════════
-        function switchTab(tabName) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(tabName + '-tab').classList.add('active');
-            event.target.classList.add('active');
-        }
-
-        // ═════════════════════════════════ CAMERA & QR SCANNING ═════════════════════════════════
-        async function openCamera() {
-            const modal = document.getElementById('cam-modal');
+    // ═══════ CAMERA ═══════
+    window.openCamera = async () => {
+        document.getElementById('cam-modal').classList.add('active');
+        detectDevice();
+        try {
+            cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
             const video = document.getElementById('cam-video');
-            modal.classList.add('active');
-
-            getDeviceInfo();
-            updateConnectionInfo();
-
-            try {
-                cameraStream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { facingMode: 'environment' } 
-                });
-                video.srcObject = cameraStream;
-                video.onloadedmetadata = () => {
-                    video.play();
-                };
-            } catch (err) {
-                alert('❌ Impossible d\'accéder à la caméra. Vérifiez les permissions.');
-                modal.classList.remove('active');
-            }
+            video.srcObject = cameraStream;
+            video.onloadedmetadata = () => video.play();
+        } catch {
+            alert('❌ Impossible d\'accéder à la caméra.');
+            document.getElementById('cam-modal').classList.remove('active');
         }
+    };
 
-        function closeCamera() {
-            const modal = document.getElementById('cam-modal');
-            const video = document.getElementById('cam-video');
-            
-            if (cameraStream) {
-                cameraStream.getTracks().forEach(track => track.stop());
-                cameraStream = null;
-            }
-            
-            video.srcObject = null;
-            modal.classList.remove('active');
+    window.closeCamera = () => {
+        if (cameraStream) { cameraStream.getTracks().forEach(t => t.stop()); cameraStream = null; }
+        document.getElementById('cam-video').srcObject = null;
+        document.getElementById('cam-modal').classList.remove('active');
+    };
+
+    window.scanQRCode = () => {
+        const video = document.getElementById('cam-video');
+        const canvas = document.getElementById('cam-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        ctx.drawImage(video, 0, 0);
+        const code = jsQR(ctx.getImageData(0, 0, canvas.width, canvas.height).data, canvas.width, canvas.height);
+        if (code) {
+            const parts = code.data.split('|');
+            if (parts.length === 3) {
+                addFromQR(parts[0].trim(), parts[1].trim(), parts[2].trim());
+                window.closeCamera();
+            } else alert('❌ Format invalide. Attendu: "Nom|Vol|Porte"');
+        } else alert('⏳ Aucun QR détecté. Réessayez.');
+    };
+
+    async function addFromQR(name, flight, gate) {
+        await fbAdd({ name, flight, gate, status: 'waiting', destination: 'Destination inconnue', deviceType });
+        const box = document.getElementById('scan-result-box');
+        const raw = document.getElementById('scan-raw');
+        raw.textContent = `${name} | ${flight} | Porte ${gate}`;
+        box.classList.add('show');
+        setTimeout(() => box.classList.remove('show'), 4000);
+        notify(`${name} ajouté via QR ✅`);
+    }
+
+    // ═══════ ADD MANUALLY ═══════
+    window.addNewPassenger = async () => {
+        const name = document.getElementById('input-name').value.trim();
+        const flight = document.getElementById('input-flight').value.trim().toUpperCase();
+        const gate = document.getElementById('input-gate').value.trim();
+        if (!name || !flight || !gate) { alert('❌ Remplissez tous les champs'); return; }
+        detectDevice();
+        await fbAdd({ name, flight, gate, status: 'waiting', destination: 'Destination inconnue', deviceType });
+        ['input-name','input-flight','input-gate'].forEach(id => document.getElementById(id).value = '');
+        notify(`${name} ajouté manuellement ✅`);
+    };
+
+    // ═══════ ACTIONS ═══════
+    window.markComing = async (fbKey) => {
+        await fbUpdate(fbKey, { status: 'coming' });
+        notify('Agent arrivé auprès du passager ✅');
+    };
+
+    window.validatePassenger = async (fbKey) => {
+        const pax = passengers.find(p => p.fbKey === fbKey);
+        const card = document.querySelector(`[data-fbkey="${fbKey}"]`);
+        if (card) {
+            card.classList.add('removing');
+            setTimeout(async () => { await fbRemove(fbKey); if(pax) notify(`${pax.name} a quitté le système ✅`); }, 300);
+        } else {
+            await fbRemove(fbKey);
+            if(pax) notify(`${pax.name} a quitté le système ✅`);
         }
+    };
 
-        function scanQRCode() {
-            const video = document.getElementById('cam-video');
-            const canvas = document.getElementById('cam-canvas');
-            const ctx = canvas.getContext('2d');
+    window.editPassenger = async (fbKey) => {
+        const pax = passengers.find(p => p.fbKey === fbKey);
+        if (!pax) return;
+        const newName = prompt('Nouveau nom :', pax.name);
+        if (newName && newName.trim()) { await fbUpdate(fbKey, { name: newName.trim() }); notify('Passager modifié ✅'); }
+    };
 
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            ctx.drawImage(video, 0, 0);
+    // ═══════ RENDER ═══════
+    function renderAll() {
+        const active = passengers.filter(p => p.status !== 'completed');
 
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const code = jsQR(imageData.data, imageData.width, imageData.height);
-
-            if (code) {
-                const data = code.data.split('|');
-                if (data.length === 3) {
-                    const [name, flight, gate] = data;
-                    addPassengerFromQR(name.trim(), flight.trim(), gate.trim());
-                    closeCamera();
-                } else {
-                    alert('❌ Format QR invalide. Format attendu: "Nom|Vol|Porte"');
-                }
-            } else {
-                alert('⏳ Aucun code QR détecté. Veuillez réessayer.');
-            }
-        }
-
-        function addPassengerFromQR(name, flight, gate) {
-            const deviceInfo = getDeviceInfo();
-            
-            passengers.push({
-                id: nextId++,
-                name: name,
-                flight: flight,
-                gate: gate,
-                status: 'waiting',
-                destination: 'Destination inconnue',
-                source: '📷 Scanner QR',
-                deviceType: deviceInfo.type,
-                deviceIP: currentDeviceInfo.ip,
-                connectionType: currentDeviceInfo.connectionType
-            });
-
-            savePassengers();
-            showNotification(`${name} ajouté via QR (${deviceInfo.type}) ✅`);
-        }
-
-        // ═════════════════════════════════ ADD NEW PASSENGER MANUALLY ═════════════════════════════════
-        function addNewPassenger() {
-            const name = document.getElementById('input-name').value.trim();
-            const flight = document.getElementById('input-flight').value.trim().toUpperCase();
-            const gate = document.getElementById('input-gate').value.trim();
-
-            if (!name || !flight || !gate) {
-                alert('❌ Veuillez remplir tous les champs');
-                return;
-            }
-
-            passengers.push({
-                id: nextId++,
-                name: name,
-                flight: flight,
-                gate: gate,
-                status: 'waiting',
-                destination: 'Destination inconnue',
-                source: '✍️ Manuel',
-                deviceType: currentDeviceInfo.type,
-                deviceIP: currentDeviceInfo.ip,
-                connectionType: currentDeviceInfo.connectionType
-            });
-
-            document.getElementById('input-name').value = '';
-            document.getElementById('input-flight').value = '';
-            document.getElementById('input-gate').value = '';
-
-            savePassengers();
-            showNotification(`${name} ajouté manuellement ✅`);
-        }
-
-        // ═════════════════════════════════ PASSENGER ACTIONS ═════════════════════════════════
-        function markComing(id) {
-            const passenger = passengers.find(p => p.id === id);
-            if (passenger) {
-                passenger.status = 'coming';
-                savePassengers();
-                showNotification('Agent arrivé auprès du passager ✅');
-            }
-        }
-
-        function validatePassenger(id) {
-            const passenger = passengers.find(p => p.id === id);
-            if (passenger) {
-                // Anim de suppression
-                const card = document.querySelector(`[data-pax-id="${id}"]`);
-                if (card) {
-                    card.classList.add('removing');
-                    setTimeout(() => {
-                        passengers = passengers.filter(p => p.id !== id);
-                        savePassengers();
-                        showNotification(`${passenger.name} a quitté le système ✅`);
-                    }, 300);
-                } else {
-                    passengers = passengers.filter(p => p.id !== id);
-                    savePassengers();
-                    showNotification(`${passenger.name} a quitté le système ✅`);
-                }
-            }
-        }
-
-        function editPassenger(id) {
-            const passenger = passengers.find(p => p.id === id);
-            if (passenger) {
-                const newName = prompt('Nouveau nom :', passenger.name);
-                if (newName) {
-                    passenger.name = newName;
-                    savePassengers();
-                    showNotification('Passager modifié ✅');
-                }
-            }
-        }
-
-        // ═════════════════════════════════ RENDERING ═════════════════════════════════
-        function renderPassengers() {
-            const activePassengers = passengers.filter(p => p.status !== 'completed');
-
-            // Agent view
-            const agentList = document.getElementById('passenger-list-agent');
-            if (activePassengers.length === 0) {
-                agentList.innerHTML = `
-                    <div class="empty-state" style="grid-column: 1 / -1;">
-                        <div class="empty-icon">📭</div>
-                        <p style="color: var(--text-light);">Aucun passager en attente</p>
-                    </div>
-                `;
-            } else {
-                agentList.innerHTML = activePassengers.map(pax => `
-                    <div class="pax-card status-${pax.status}" data-pax-id="${pax.id}">
-                        <span class="pax-status ${pax.status}">${pax.status === 'waiting' ? '⏳ En attente' : '✅ Agent arrive'}</span>
+        // Agent
+        const agentList = document.getElementById('passenger-list-agent');
+        if (agentList) {
+            agentList.innerHTML = active.length === 0
+                ? `<div class="empty-state" style="grid-column:1/-1;"><div class="empty-icon">📭</div><p style="color:var(--text-light);">Aucun passager en attente</p></div>`
+                : active.map(p => `
+                    <div class="pax-card status-${p.status}" data-fbkey="${p.fbKey}">
+                        <span class="pax-status ${p.status}">${p.status === 'waiting' ? '⏳ En attente' : '✅ Agent arrive'}</span>
                         <div class="pax-info">
-                            <div class="pax-name">${pax.name}</div>
-                            <div class="pax-details"><strong>Vol:</strong> ${pax.flight}</div>
-                            <div class="pax-details"><strong>Porte:</strong> ${pax.gate}</div>
-                            <div class="pax-details"><strong>Destination:</strong> ${pax.destination}</div>
-                            <div class="device-source">${pax.source} | ${pax.deviceType}</div>
-                            <div class="wheelchair-icon">
-                                ${pax.status === 'waiting' ? '⏳' : '<span class="wheelchair-animated">♿️🚶🏻</span>'}
-                            </div>
+                            <div class="pax-name">${p.name}</div>
+                            <div class="pax-details"><strong>Vol:</strong> ${p.flight}</div>
+                            <div class="pax-details"><strong>Porte:</strong> ${p.gate}</div>
+                            <div class="pax-details"><strong>Destination:</strong> ${p.destination}</div>
+                            <div class="wheelchair-icon">${p.status === 'waiting' ? '⏳' : '<span class="wheelchair-animated">♿️🚶🏻</span>'}</div>
                         </div>
                         <div class="pax-actions">
-                            ${pax.status === 'waiting' ? `<button class="btn btn-coming" onclick="markComing(${pax.id})">AGENT ARRIVE</button>` : ''}
-                            <button class="btn btn-valid" onclick="validatePassenger(${pax.id})">VALIDER</button>
-                            <button class="btn btn-edit" onclick="editPassenger(${pax.id})">✏️ MODIFIER</button>
+                            ${p.status === 'waiting' ? `<button class="btn btn-coming" onclick="markComing('${p.fbKey}')">AGENT ARRIVE</button>` : ''}
+                            <button class="btn btn-valid" onclick="validatePassenger('${p.fbKey}')">VALIDER</button>
+                            <button class="btn btn-edit" onclick="editPassenger('${p.fbKey}')">✏️ MODIFIER</button>
                         </div>
-                    </div>
-                `).join('');
-            }
-
-            document.getElementById('pax-count').textContent = activePassengers.length;
-
-            // Display view
-            const displayList = document.getElementById('passenger-list-display');
-            if (activePassengers.length === 0) {
-                displayList.innerHTML = `
-                    <tr>
-                        <td colspan="5" class="empty-state" style="padding: 40px;">
-                            <div class="empty-icon">✅</div>
-                            <p>Tous les passagers ont été servis</p>
-                        </td>
-                    </tr>
-                `;
-            } else {
-                displayList.innerHTML = activePassengers.map(pax => `
-                    <tr class="fids-tr status-${pax.status}" data-pax-id="${pax.id}">
-                        <td class="fids-td fids-name">${pax.name}</td>
-                        <td class="fids-td fids-flight">${pax.flight}</td>
-                        <td class="fids-td"><span class="fids-gate">${pax.gate}</span></td>
-                        <td class="fids-td">
-                            <div class="fids-device">${pax.source}</div>
-                            <div class="fids-device">${pax.deviceType}</div>
-                        </td>
-                        <td class="fids-td"><span class="fids-badge ${pax.status}">${pax.status === 'waiting' ? '⏳ ATTENTE' : '♿️ AGENT'}</span></td>
-                    </tr>
-                `).join('');
-            }
+                    </div>`).join('');
         }
 
-        function updateStats() {
-            const stats = {
-                total: passengers.length,
-                waiting: passengers.filter(p => p.status === 'waiting').length,
-                coming: passengers.filter(p => p.status === 'coming').length,
-                completed: passengers.filter(p => p.status === 'completed').length
-            };
+        document.getElementById('pax-count').textContent = active.length;
 
-            document.getElementById('stat-total').textContent = stats.total;
-            document.getElementById('stat-waiting').textContent = stats.waiting;
-            document.getElementById('stat-coming').textContent = stats.coming;
-            document.getElementById('stat-completed').textContent = stats.completed;
+        // Display (Salle)
+        const dispList = document.getElementById('passenger-list-display');
+        if (dispList) {
+            dispList.innerHTML = active.length === 0
+                ? `<tr><td colspan="4" class="empty-state" style="padding:40px;"><div class="empty-icon">✅</div><p>Tous les passagers ont été servis</p></td></tr>`
+                : active.map(p => `
+                    <tr class="fids-tr status-${p.status}" data-fbkey="${p.fbKey}">
+                        <td class="fids-td fids-name">${p.name}</td>
+                        <td class="fids-td fids-flight">${p.flight}</td>
+                        <td class="fids-td"><span class="fids-gate">${p.gate}</span></td>
+                        <td class="fids-td"><span class="fids-badge ${p.status}">${p.status === 'waiting' ? '⏳ ATTENTE' : '♿️ AGENT'}</span></td>
+                    </tr>`).join('');
         }
 
-        function updateClock() {
-            const now = new Date();
-            document.getElementById('display-clock').textContent = 
-                `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-        }
+        // Stats
+        document.getElementById('stat-total').textContent = passengers.length;
+        document.getElementById('stat-waiting').textContent = passengers.filter(p=>p.status==='waiting').length;
+        document.getElementById('stat-coming').textContent = passengers.filter(p=>p.status==='coming').length;
+        document.getElementById('stat-completed').textContent = passengers.filter(p=>p.status==='completed').length;
+    }
 
-        function updateAll() {
-            renderPassengers();
-            updateStats();
-        }
+    // ═══════ CLOCK ═══════
+    function updateClock() {
+        const now = new Date();
+        const el = document.getElementById('display-clock');
+        if (el) el.textContent = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+    }
 
-        function showNotification(message) {
-            const notification = document.createElement('div');
-            notification.style.cssText = `
-                position: fixed;
-                bottom: 20px;
-                right: 20px;
-                background: var(--success);
-                color: white;
-                padding: 16px 24px;
-                border-radius: 10px;
-                font-weight: 700;
-                z-index: 10000;
-                animation: slideIn 0.3s ease;
-                box-shadow: 0 0 20px rgba(0, 230, 118, 0.4);
-            `;
-            notification.textContent = message;
-            document.body.appendChild(notification);
-            setTimeout(() => notification.remove(), 3000);
-        }
+    // ═══════ NOTIFICATION ═══════
+    function notify(msg) {
+        const n = document.createElement('div');
+        n.style.cssText = 'position:fixed;bottom:20px;right:20px;background:var(--success);color:white;padding:16px 24px;border-radius:10px;font-weight:700;z-index:10000;animation:slideIn 0.3s ease;box-shadow:0 0 20px rgba(0,230,118,0.4);font-family:Poppins,sans-serif;';
+        n.textContent = msg;
+        document.body.appendChild(n);
+        setTimeout(() => n.remove(), 3000);
+    }
 
-        // Initialization
-        setInterval(updateClock, 1000);
-        getDeviceInfo();
-        getConnectionType();
-        getIPAddress();
-        loadPassengers();
-        updateClock();
-
-        // Update connection info when connection changes
-        const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-        if (connection) {
-            connection.addEventListener('change', () => {
-                getConnectionType();
-                updateConnectionInfo();
-            });
-        }
-    </script>
+    // ═══════ INIT ═══════
+    setInterval(updateClock, 1000);
+    updateClock();
+    detectDevice();
+    renderAll();
+</script>
+```
 
 </body>
 </html>
